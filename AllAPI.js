@@ -46,7 +46,7 @@ function generateToken(userCode) {
   };
 
   const options = {
-    expiresIn: '1h', // Token expiration time
+    expiresIn: '6h', // Token expiration time
   };
 
   const token = jwt.sign(payload, jwtSecret, options);
@@ -82,7 +82,7 @@ function apiKeyMiddleware(req, res, next) {
 
 app.use(apiKeyMiddleware);
 // Get employee Data
-app.get('/getEmployeeData', async (req, res) => {
+app.get('/getEmployeeData',verifyToken, async (req, res) => {
     const iId = req.query.iId;
   
     if (!iId) {
@@ -106,7 +106,7 @@ app.get('/getEmployeeData', async (req, res) => {
   });
 
 //Update Employee Data
-app.put('/updateEmployeeData', async (req, res) => {
+app.put('/updateEmployeeData',verifyToken, async (req, res) => {
   const {
     iId, sFirstName, sMiddleName, sLastName, sGender, dtDob, sAdd1, sAdd2, sAdd3, sCity, sState,
     sPinCode, sAadhaarNumber, sPanCard, dtJoiningDate, sContactNumber, iCreatedBy,
@@ -155,7 +155,7 @@ app.put('/updateEmployeeData', async (req, res) => {
   }
 });
 // Insert Employee Data Update Log
-app.post('/insertEmployeeUpdateLog', async (req, res) => {
+app.post('/insertEmployeeUpdateLog',verifyToken, async (req, res) => {
     const {
       iId, iUpdatedBy
     } = req.body;
@@ -192,7 +192,7 @@ app.post('/insertEmployeeUpdateLog', async (req, res) => {
   });
 
 // Insert Employee Data
-app.post('/insertEmployeeData', async (req, res) => {
+app.post('/insertEmployeeData',verifyToken, async (req, res) => {
     const {
       sFirstName, sMiddleName, sLastName, sGender, dtDob, sAdd1, sAdd2, sAdd3, sCity, sState,
       sPinCode, sAadhaarNumber, sPanCard, dtJoiningDate, sContactNumber, iCreatedBy,
@@ -244,7 +244,7 @@ app.post('/insertEmployeeData', async (req, res) => {
     }
   });
 // Insert Employee Attendence
-app.post('/insertEmployeeAttendence', async (req, res) => {
+app.post('/insertEmployeeAttendence',verifyToken, async (req, res) => {
     const {
       iId, bShift1, bShift2, bShift3, bShift4, iCreateBy
     } = req.body;
@@ -279,7 +279,7 @@ app.post('/insertEmployeeAttendence', async (req, res) => {
   });
 
   //Get All employee
-  app.get('/getAllEmployeeData', async (req, res) => {
+  app.get('/getAllEmployeeData',verifyToken, async (req, res) => {
   
 
 
@@ -338,7 +338,7 @@ app.get('/protectedRoute', verifyToken, (req, res) => {
   res.json({ status:true, message: 'You have access to this protected route.', userCode: req.userCode });
 });
 
-app.put('/forgotPassword', async (req, res) => {
+app.put('/forgotPassword',verifyToken, async (req, res) => {
   const {
     sUserCode, iOTP, sPassword
   } = req.body;
@@ -368,7 +368,7 @@ app.put('/forgotPassword', async (req, res) => {
 });
 
 // ERPuserdb
-app.post('/newUser', async (req, res) => {
+app.post('/newUser', verifyToken, async (req, res) => {
   const {
     sUserCode, sPassword, sFirstName, sLastName, sAddressLine1, sAddressLine2, sCity, sState, sPinCode, sPhone1, sEmail, dtJoinDate, bStatus, iCreatedBy
   } = req.body;
@@ -406,7 +406,7 @@ app.post('/newUser', async (req, res) => {
   }
 });
 
-app.post('/assignGroupToMenus', async (req, res) => {
+app.post('/assignGroupToMenus',verifyToken, async (req, res) => {
   const { bCheckState, iMenuId, iGroupId, iUserId } = req.body;
 
   try {
@@ -445,7 +445,7 @@ app.post('/assignGroupToMenus', async (req, res) => {
   }
 });
 
-app.post('/assignGroupToUser', async (req, res) => {
+app.post('/assignGroupToUser',verifyToken, async (req, res) => {
   const { bCheckState, iUserId, iGroupId, iRoleUserId } = req.body;
 
   try {
@@ -484,7 +484,7 @@ app.post('/assignGroupToUser', async (req, res) => {
   }
 });
 
-app.get('/getAssignedMenus', async (req, res) => {
+app.get('/getAssignedMenus',verifyToken, async (req, res) => {
   const { iMenuId, iGroupId } = req.query;
 
   try {
@@ -532,7 +532,7 @@ app.get('/getAssignedMenus', async (req, res) => {
   }
 });
 
-app.get('/getMenuHeaders', async (req, res) => {
+app.get('/getMenuHeaders',verifyToken, async (req, res) => {
   try {
     const request = new sql.Request();
     const query =(`
@@ -552,7 +552,7 @@ app.get('/getMenuHeaders', async (req, res) => {
   }
 });
 
-app.get('/getMenu', async (req, res) => {
+app.get('/getMenu',verifyToken, async (req, res) => {
   const iUserId = req.query.iUserId;
   const iMenuId = req.query.iMenuId;
 
@@ -596,7 +596,7 @@ app.get('/getMenu', async (req, res) => {
   }
 });
 
-app.get('/getRoles', async (req, res) => {
+app.get('/getRoles',verifyToken, async (req, res) => {
   try {
     const request = new sql.Request();
 
@@ -624,7 +624,7 @@ app.get('/getRoles', async (req, res) => {
 });
 
 
-app.get('/getSubMenuItems', async (req, res) => {
+app.get('/getSubMenuItems',verifyToken, async (req, res) => {
   const { iMenuId, iUserId } = req.query;
 
   try {
@@ -664,7 +664,7 @@ app.get('/getSubMenuItems', async (req, res) => {
   }
 });
 
-app.get('/getUserLoginDetails', async (req, res) => {
+app.get('/getUserLoginDetails',verifyToken, async (req, res) => {
   const { userId } = req.query;
 
   try {
@@ -686,7 +686,7 @@ app.get('/getUserLoginDetails', async (req, res) => {
   }
 });
 
-app.get('/getUserRoles', async (req, res) => {
+app.get('/getUserRoles',verifyToken, async (req, res) => {
   const { iRoleUserId } = req.query;
 
   try {
@@ -719,7 +719,7 @@ app.get('/getUserRoles', async (req, res) => {
   }
 });
 
-app.get('/getUsers', async (req, res) => {
+app.get('/getUsers',verifyToken, async (req, res) => {
   try {
     const request = new sql.Request();
 
@@ -743,7 +743,7 @@ app.get('/getUsers', async (req, res) => {
   }
 });
 
-app.get('/getUserName', async (req, res) => {
+app.get('/getUserName',verifyToken, async (req, res) => {
   const { iId } = req.query;
 
   try {
@@ -771,7 +771,7 @@ app.get('/getUserName', async (req, res) => {
   }
 });
 
-app.get('/searchUserEmail', async (req, res) => {
+app.get('/searchUserEmail',verifyToken, async (req, res) => {
   const { sUserCode } = req.query;
 
   try {
@@ -799,7 +799,7 @@ app.get('/searchUserEmail', async (req, res) => {
 });
 
 
-app.post('/setPassword', async (req, res) => {
+app.post('/setPassword',verifyToken, async (req, res) => {
   const { sUserCode, sPassword } = req.body;
 
   try {
