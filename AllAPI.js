@@ -46,7 +46,7 @@ function generateToken(userCode) {
   };
 
   const options = {
-    expiresIn: '6h', // Token expiration time
+    expiresIn: '30d', // Token expiration time
   };
 
   const token = jwt.sign(payload, jwtSecret, options);
