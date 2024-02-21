@@ -399,10 +399,10 @@ app.post('/newUser', verifyToken, async (req, res) => {
 
     const result = await request.query(query);
 
-    res.json({ message: "Updated Successfully" });
+    res.json({ status: true });
   } catch (err) {
     // console.error('Error executing SQL query:', err);
-    res.status(500).json({ error: 'User Already Exists'});
+    res.status(500).json({ status: false});
   }
 });
 
@@ -477,7 +477,7 @@ app.post('/assignGroupToUser',verifyToken, async (req, res) => {
 
     await request.query(query);
 
-    res.json({ message: 'Operation completed successfully' });
+    res.json({ status: true, message: 'Operation completed successfully' });
   } catch (err) {
     console.error('Error executing SQL query:', err);
     res.status(500).json({ error: 'Internal Server Error' });
