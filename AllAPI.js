@@ -399,10 +399,10 @@ app.post('/newUser', verifyToken, async (req, res) => {
 
     const result = await request.query(query);
 
-    res.json({ status: true });
+    res.json({ status: true, message: "User Added Successfully" });
   } catch (err) {
     // console.error('Error executing SQL query:', err);
-    res.status(500).json({ status: false});
+    res.status(500).json({ status: false, message: "user Already Exists"});
   }
 });
 
