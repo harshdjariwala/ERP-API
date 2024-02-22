@@ -335,7 +335,7 @@ app.post('/insertEmployeeAttendence',verifyToken, async (req, res) => {
 
 // Example protected route
 app.get('/protectedRoute', verifyToken, (req, res) => {
-  res.json({ status:true, message: 'You have access to this protected route.', userCode: req.userCode });
+  res.json({ status:true, message: 'You have access to this protected route.', userCode: req.userCode, userId: req.userId });
 });
 
 app.put('/forgotPassword',verifyToken, async (req, res) => {
