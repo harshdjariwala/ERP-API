@@ -334,8 +334,15 @@ app.post('/insertEmployeeAttendence',verifyToken, async (req, res) => {
   });
 
 // Example protected route
-app.get('/protectedRoute', verifyToken, (req, res) => {
-  res.json({ status:true, message: 'You have access to this protected route.', userCode: req.userCode, userId: req.userId });
+app.get('/protectedRoute', verifyToken, async(req, res) => {
+  const sUserCode = req.userCode;
+  const request = new sql.Request();
+  const query = `USE ERPuserdb;
+         SELECT iId FROM tblUserM WHERE sUserCode = '${sUserCode}'`;
+  const result = await request.query(query);
+  const userId = ((result.recordset[0].iId));
+
+  res.json({ status:true, message: 'You have access to this protected route.', userId: userId, userCode: req.userCode, });
 });
 
 app.put('/forgotPassword',verifyToken, async (req, res) => {
