@@ -454,41 +454,99 @@ app.post('/assignGroupToUser', verifyToken, async (req, res) => {
   const { bCheckState, iUserId, iGroupId, iRoleUserId } = req.body;
 
   try {
-    const request = new sql.Request();
+    const transaction = new sql.Transaction();
+    const request = new sql.Request(transaction);
 
     request.input('bCheckState', sql.Bit, bCheckState);
     request.input('iUserId', sql.Int, iUserId);
     request.input('iGroupId', sql.Int, iGroupId);
     request.input('iRoleUserId', sql.Int, iRoleUserId);
 
-    // Set the database context
-    await request.query('USE ERPuserdb;');
+    await transaction.begin();
 
-    // Delete statement when bCheckState is 0 or 1
-    let deleteQuery = `
-      DELETE FROM tblGroupUserM WHERE iUserId = @iRoleUserId AND iGroupId = @iGroupId;
-    `;
+    try {
+      let deleteQuery = `
+        USE ERPuserdb;
+        DELETE FROM tblGroupUserM
+        WHERE iUserId = @iRoleUserId AND iGroupId = @iGroupId;
+      `;
 
-    // Insert statement when bCheckState is 1
-    let insertQuery = `
-      INSERT INTO tblGroupUserM (iGroupId, iUserId, bStatus, iCreatedBy)
-      VALUES (@iGroupId, @iRoleUserId, 1, @iUserId);
-    `;
+      await request.query(deleteQuery);
 
-    // Execute the delete query
-    await request.query(deleteQuery);
+      if (bCheckState !== 0) {
+        let insertQuery = `
+        USE ERPuserdb;
+          INSERT INTO tblGroupUserM (iGroupId, iUserId, bStatus, iCreatedBy)
+          VALUES (@iGroupId, @iRoleUserId, 1, @iUserId);
+        `;
+        await request.query(insertQuery);
+      }
 
-    // If bCheckState is 1, execute the insert query
-    if (bCheckState === 1) {
-      await request.query(insertQuery);
+      await transaction.commit();
+      res.json({ status: true, message: 'Operation completed successfully' });
+    } catch (error) {
+      await transaction.rollback();
+      console.error('Error executing SQL query:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
     }
+  } catch (err) {
+    console.error('Error starting transaction:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
-    res.json({ status: true, message: 'Operation completed successfully' });
+
+// ... (unchanged code for /getAssignedMenus)
+
+
+app.get('/getAssignedMenus',verifyToken, async (req, res) => {
+  const { iMenuId, iGroupId } = req.query;
+
+  try {
+    const request = new sql.Request();
+    request.input('iMenuId', sql.Int, iMenuId);
+    request.input('iGroupId', sql.Int, iGroupId);
+
+    const query = `
+    USE ERPuserdb;
+      SELECT
+        GM.iMenuId as GMId,
+        CASE WHEN GM.iMenuId IS NULL THEN 'false' ELSE 'true' END as CheckState,
+        M1.iId as iMenuId,
+        M1.IParentMenuId,
+        M1.sFormName,
+        M1.sMenuName
+      FROM
+        tblMenuM M1
+        LEFT JOIN tblGroupMenuM GM ON GM.iMenuId = M1.iId AND GM.iGroupId = @iGroupId
+      WHERE
+        M1.iParentMenuId = @iMenuId AND M1.bstatus = 1 AND M1.sFormName <> ''
+      UNION
+      SELECT
+        GM.iMenuId as GMId,
+        CASE WHEN GM.iMenuId IS NULL THEN 'false' ELSE 'true' END as CheckState,
+        M2.iId as iMenuId,
+        M2.IParentMenuId,
+        M2.sFormName,
+        M2.sMenuName
+      FROM
+        tblMenuM M1
+        LEFT JOIN tblGroupMenuM GM ON GM.iMenuId = M1.iId AND GM.iGroupId = @iGroupId
+        INNER JOIN tblMenuM M2 ON M2.iParentMenuId = M1.iId
+      WHERE
+        M1.iParentMenuId = @iMenuId AND M2.bstatus = 1 AND M2.sFormName <> ''
+      ORDER BY
+        M1.sMenuName;
+    `;
+
+    const result = await request.query(query);
+    res.json(result.recordset);
   } catch (err) {
     console.error('Error executing SQL query:', err);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 
 app.get('/getAssignedMenus',verifyToken, async (req, res) => {
