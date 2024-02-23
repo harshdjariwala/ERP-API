@@ -398,18 +398,28 @@ app.post('/newUser', verifyToken, async (req, res) => {
     request.input('bStatus', sql.Bit, bStatus);
     request.input('iCreatedBy', sql.Int, iCreatedBy);
 
-    const query = `USE ERPuserdb;
-    INSERT INTO tblUserM
-      ([sUserCode], [sPassword], [sFirstName], [sLastName], [sAddressLine1], [sAddressLine2], [sCity], [sState], [sPinCode], [sPhone1], [sEmail], [dtCreateDate], [dtJoinDate], [bStatus], [iCreatedBy])
-      VALUES
-      (@sUserCode, @sPassword, @sFirstName, @sLastName, @sAddressLine1, @sAddressLine2, @sCity, @sState, @sPinCode, @sPhone1, @sEmail, GETDATE() , @dtJoinDate, @bStatus, @iCreatedBy)`;
+    const checkQuery = `USE ERPuserdb; SELECT CASE WHEN EXISTS (SELECT 1 FROM tbluserM WHERE sUserCode = '${sUserCode}') THEN 1 ELSE 0 END AS UserExists;`
+    const result = await request.query(checkQuery);
+      // res.json(result.recordset);
+    const UserExists = Number(((result.recordset[0].UserExists)));
+    
+    if(UserExists === 1){
+      res.status(500).json({ status: false, message: "user Already Exists"});
+    }else if (UserExists === 0){
+      const query = `USE ERPuserdb;
+  INSERT INTO tblUserM
+    ([sUserCode], [sPassword], [sFirstName], [sLastName], [sAddressLine1], [sAddressLine2], [sCity], [sState], [sPinCode], [sPhone1], [sEmail], [dtCreateDate], [dtJoinDate], [bStatus], [iCreatedBy])
+    VALUES
+    (@sUserCode, @sPassword, @sFirstName, @sLastName, @sAddressLine1, @sAddressLine2, @sCity, @sState, @sPinCode, @sPhone1, @sEmail, GETDATE() , @dtJoinDate, @bStatus, @iCreatedBy)`;
 
-    const result = await request.query(query);
+  const result = await request.query(query);
 
-    res.json({ status: true, message: "User Added Successfully" });
+  res.json({ status: true, message: "User Added Successfully" });
+    }
+  
   } catch (err) {
-    // console.error('Error executing SQL query:', err);
-    res.status(500).json({ status: false, message: "user Already Exists"});
+      console.error('Error executing SQL query:', err);
+    // res.status(500).json({ status: false, message: "user Already Exists"});
   }
 });
 
