@@ -424,24 +424,17 @@ app.post('/assignGroupToMenus',verifyToken, async (req, res) => {
     request.input('iGroupId', sql.Int, iGroupId);
     request.input('iUserId', sql.Int, iUserId);
 
-    let query;
+    let query = `if @bCheckState = 0 
+    Begin
+     Delete from tblGroupMenuM where iGroupId =@iGroupId  And iMenuId =@iMenuId; 
+    End
+    Else
+    Begin
+    Delete from tblGroupMenuM where iGroupId =@iGroupId  And iMenuId =@iMenuId; 
+    
+    INSERT INTO tblGroupMenuM(iGroupId , iMenuId ,bStatus,iCreatedBy)
+         VALUES(@iGroupId,@iMenuId ,1,@iUserId)`;
 
-    if (bCheckState === 0) {
-      query = `
-        USE ERPuserdb;
-        DELETE FROM tblGroupMenuM
-        WHERE iGroupId = @iGroupId AND iMenuId = @iMenuId;
-      `;
-    } else {
-      query = `
-        USE ERPuserdb;
-        DELETE FROM tblGroupMenuM
-        WHERE iGroupId = @iGroupId AND iMenuId = @iMenuId;
-
-        INSERT INTO tblGroupMenuM (iGroupId, iMenuId, bStatus, iCreatedBy)
-        VALUES (@iGroupId, @iMenuId, 1, @iUserId);
-      `;
-    }
 
     await request.query(query);
 
@@ -463,24 +456,18 @@ app.post('/assignGroupToUser',verifyToken, async (req, res) => {
     request.input('iGroupId', sql.Int, iGroupId);
     request.input('iRoleUserId', sql.Int, iRoleUserId);
 
-    let query;
+    let query = `if @bCheckState = 0   
+    Begin   
+     Delete from tblGroupUserM where iUserId = @iRoleUserId and iGroupId = @iGroupId;  
+    
+    End  
+    Else  
+    Begin  
+    Delete from tblGroupUserM where iUserId =@iRoleUserId and iGroupId = @iGroupId;  
+      
+    INSERT INTO tblGroupUserM(iGroupId , iUserId ,bStatus,iCreatedBy)  
+               VALUES(@iGroupId,@iRoleUserId ,1,@iUserId)`;
 
-    if (bCheckState === 0) {
-      query = `
-      USE ERPuserdb;
-        DELETE FROM tblGroupUserM
-        WHERE iUserId = @iRoleUserId AND iGroupId = @iGroupId;
-      `;
-    } else {
-      query = `
-      USE ERPuserdb;
-        DELETE FROM tblGroupUserM
-        WHERE iUserId = @iRoleUserId AND iGroupId = @iGroupId;
-
-        INSERT INTO tblGroupUserM (iGroupId, iUserId, bStatus, iCreatedBy)
-        VALUES (@iGroupId, @iRoleUserId, 1, @iUserId);
-      `;
-    }
 
     await request.query(query);
 
