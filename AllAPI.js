@@ -413,8 +413,9 @@ app.post('/newUser', verifyToken, async (req, res) => {
   }
 });
 
-app.post('/assignGroupToMenus',verifyToken, async (req, res) => {
+app.post('/assignGroupToMenus', verifyToken, async (req, res) => {
   const { bCheckState, iMenuId, iGroupId, iUserId } = req.body;
+  // console.log(bCheckState, iMenuId, iGroupId, iUserId)
 
   try {
     const request = new sql.Request();
@@ -424,17 +425,20 @@ app.post('/assignGroupToMenus',verifyToken, async (req, res) => {
     request.input('iGroupId', sql.Int, iGroupId);
     request.input('iUserId', sql.Int, iUserId);
 
-    let query = `if @bCheckState = 0 
-    Begin
-     Delete from tblGroupMenuM where iGroupId =@iGroupId  And iMenuId =@iMenuId; 
-    End
-    Else
-    Begin
-    Delete from tblGroupMenuM where iGroupId =@iGroupId  And iMenuId =@iMenuId; 
-    
-    INSERT INTO tblGroupMenuM(iGroupId , iMenuId ,bStatus,iCreatedBy)
-         VALUES(@iGroupId,@iMenuId ,1,@iUserId)`;
+    let query;
 
+    if (bCheckState == 0) {
+      query = `USE ERPuserdb; DELETE FROM tblGroupMenuM WHERE iGroupId = @iGroupId AND iMenuId = @iMenuId;`;
+    } else {
+      query = `use ERPuserdb;
+        BEGIN
+          DELETE FROM tblGroupMenuM WHERE iGroupId = @iGroupId AND iMenuId = @iMenuId;
+
+          INSERT INTO tblGroupMenuM (iGroupId, iMenuId, bStatus, iCreatedBy)
+          VALUES (@iGroupId, @iMenuId, 1, @iUserId);
+        END
+      `;
+    }
 
     await request.query(query);
 
@@ -445,7 +449,8 @@ app.post('/assignGroupToMenus',verifyToken, async (req, res) => {
   }
 });
 
-app.post('/assignGroupToUser',verifyToken, async (req, res) => {
+
+app.post('/assignGroupToUser', verifyToken, async (req, res) => {
   const { bCheckState, iUserId, iGroupId, iRoleUserId } = req.body;
 
   try {
@@ -456,20 +461,27 @@ app.post('/assignGroupToUser',verifyToken, async (req, res) => {
     request.input('iGroupId', sql.Int, iGroupId);
     request.input('iRoleUserId', sql.Int, iRoleUserId);
 
-    let query = `if @bCheckState = 0   
-    Begin   
-     Delete from tblGroupUserM where iUserId = @iRoleUserId and iGroupId = @iGroupId;  
-    
-    End  
-    Else  
-    Begin  
-    Delete from tblGroupUserM where iUserId =@iRoleUserId and iGroupId = @iGroupId;  
-      
-    INSERT INTO tblGroupUserM(iGroupId , iUserId ,bStatus,iCreatedBy)  
-               VALUES(@iGroupId,@iRoleUserId ,1,@iUserId)`;
+    // Set the database context
+    await request.query('USE ERPuserdb;');
 
+    // Delete statement when bCheckState is 0 or 1
+    let deleteQuery = `
+      DELETE FROM tblGroupUserM WHERE iUserId = @iRoleUserId AND iGroupId = @iGroupId;
+    `;
 
-    await request.query(query);
+    // Insert statement when bCheckState is 1
+    let insertQuery = `
+      INSERT INTO tblGroupUserM (iGroupId, iUserId, bStatus, iCreatedBy)
+      VALUES (@iGroupId, @iRoleUserId, 1, @iUserId);
+    `;
+
+    // Execute the delete query
+    await request.query(deleteQuery);
+
+    // If bCheckState is 1, execute the insert query
+    if (bCheckState === 1) {
+      await request.query(insertQuery);
+    }
 
     res.json({ status: true, message: 'Operation completed successfully' });
   } catch (err) {
@@ -477,6 +489,7 @@ app.post('/assignGroupToUser',verifyToken, async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 app.get('/getAssignedMenus',verifyToken, async (req, res) => {
   const { iMenuId, iGroupId } = req.query;
