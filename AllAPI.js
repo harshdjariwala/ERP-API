@@ -353,7 +353,7 @@ app.post('/checkOut', verifyToken, async (req, res) => {
 });
 
 //checkin Status
-app.get('/checkinStatus', verifyToken, async (req, res) => {
+app.get('/checkinStatus',verifyToken, async (req, res) => {
   const iEmployeeId = req.query.iEmployeeId;
 
   try {
@@ -373,17 +373,8 @@ app.get('/checkinStatus', verifyToken, async (req, res) => {
     FROM tblEmployeeAttendence
     WHERE iEmployeeId = @employeeId
     ORDER BY dtCreateDate DESC;`;
-
-    const resultCheckin = await request.query(isCheckinQuery);
-    const isCheckin = resultCheckin.recordset.length > 0 ? resultCheckin.recordset[0].bCheckStatus : null;
-
-    if (isCheckin === 'CheckedOut') {
-      return res.json({ status: true, message: "CheckedOut" });
-    } else if (isCheckin === 'CheckedIn') {
-      return res.json({ status: false, message: "CheckedIn" });
-    } else {
-      return res.status(404).json({ status: false, message: "No attendance record found for the user" });
-    }
+    const result = await request.query(isCheckinQuery);
+    res.json(result.recordset[0]);
 
   } catch (err) {
     console.error('Error executing SQL query:', err);
