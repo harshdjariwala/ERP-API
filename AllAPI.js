@@ -362,18 +362,25 @@ app.get('/checkinStatus', verifyToken, async (req, res) => {
     request.input('iEmployeeId', sql.Int, iEmployeeId);
 
     const isCheckinQuery = `
-      SELECT TOP(1) bCheckStatus 
-      FROM tblEmployeeAttendence
-      WHERE iEmployeeId = @iEmployeeId
-      ORDER BY dtCreateDate DESC;`;
+    DECLARE @employeeId INT = @iEmployeeId;
+
+    SELECT TOP(1)
+      CASE 
+        WHEN bCheckStatus = 1 THEN 'CheckedOut'
+        WHEN bCheckStatus = 0 THEN 'CheckedIn'
+        ELSE 'NoRecord'
+      END AS CheckinStatus
+    FROM tblEmployeeAttendence
+    WHERE iEmployeeId = @employeeId
+    ORDER BY dtCreateDate DESC;`;
 
     const resultCheckin = await request.query(isCheckinQuery);
     const isCheckin = resultCheckin.recordset.length > 0 ? resultCheckin.recordset[0].bCheckStatus : null;
 
-    if (isCheckin === true) {
-      return res.json({ status: true, message: "CheckedIn" });
-    } else if (isCheckin === false) {
-      return res.json({ status: false, message: "CheckedOut" });
+    if (isCheckin === 'CheckedOut') {
+      return res.json({ status: true, message: "CheckedOut" });
+    } else if (isCheckin === 'CheckedIn') {
+      return res.json({ status: false, message: "CheckedIn" });
     } else {
       return res.status(404).json({ status: false, message: "No attendance record found for the user" });
     }
