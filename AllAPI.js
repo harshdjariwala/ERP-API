@@ -353,13 +353,13 @@ app.post('/checkOut', verifyToken, async (req, res) => {
 });
 
 //checkin Status
-app.get('/checkinStatus',verifyToken, async (req, res) => {
+app.get('/checkinStatus', verifyToken, async (req, res) => {
   const iEmployeeId = req.query.iEmployeeId;
 
   try {
     const request = new sql.Request();
 
-    request.input('iEmployeeId',  sql.Int, iEmployeeId);
+    request.input('iEmployeeId', sql.Int, iEmployeeId);
 
     const isCheckinQuery = `
       SELECT TOP(1) bCheckStatus 
@@ -371,9 +371,11 @@ app.get('/checkinStatus',verifyToken, async (req, res) => {
     const isCheckin = resultCheckin.recordset.length > 0 ? resultCheckin.recordset[0].bCheckStatus : null;
 
     if (isCheckin === true) {
-      return res.json({ "status": false, message: "CheckedOut" });
+      return res.json({ status: true, message: "CheckedIn" });
+    } else if (isCheckin === false) {
+      return res.json({ status: false, message: "CheckedOut" });
     } else {
-      return res.json({ "status": true, message: "CheckedIn" });
+      return res.status(404).json({ status: false, message: "No attendance record found for the user" });
     }
 
   } catch (err) {
@@ -381,6 +383,7 @@ app.get('/checkinStatus',verifyToken, async (req, res) => {
     return res.status(500).json({ error: 'Error executing SQL query.' });
   }
 });
+
   //Get All employee
   app.get('/getAllEmployeeData',verifyToken, async (req, res) => {
   
