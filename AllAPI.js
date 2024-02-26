@@ -243,41 +243,144 @@ app.post('/insertEmployeeData',verifyToken, async (req, res) => {
       res.status(500).json({ error: 'Error executing SQL query.' });
     }
   });
-// Insert Employee Attendence
-app.post('/insertEmployeeAttendence',verifyToken, async (req, res) => {
-    const {
-      iId, bShift1, bShift2, bShift3, bShift4, iCreateBy
-    } = req.body;
-  
-    // if (!iId || !bShift1 || !bShift2 || !bShift3 || !bShift4 || !iCreateBy) {
-    //   return res.status(400).json({ error: 'Please provide valid parameters.' });
-    // }
-  
-    try {
-      const request = new sql.Request();
-  
-      request.input('iId', sql.Int, iId);
-      request.input('bShift1', sql.Bit, bShift1);
-      request.input('bShift2', sql.Bit, bShift2);
-      request.input('bShift3', sql.Bit, bShift3);
-      request.input('bShift4', sql.Bit, bShift4);
-      request.input('iCreateBy', sql.Int, iCreateBy);
-      iCreateBy
-  
-      const query = `INSERT INTO [ERP].[dbo].[tblEmployeeAttendence]
-        ([iId], [dtCreateDate], [bShift1], [bShift2], [bShift3], [bShift4],[iCreateBy])
-        VALUES
-        (@iId, GETDATE(), @bShift1, @bShift2, @bShift3, @bShift4, @iCreateBy)`;
-  
-      const result = await request.query(query);
-  
-      res.json({ message: "Updated Successfully" });
-    } catch (err) {
-      console.error('Error executing SQL query:', err);
-      res.status(500).json({ error: 'Error executing SQL query.' });
-    }
-  });
 
+// Checkin Employee Attendence
+app.post('/checkin', verifyToken, async (req, res) => {
+  const {
+    iEmployeeId, bShift1, bShift2, bShift3, bShift4, iCreateBy
+  } = req.body;
+
+  try {
+    const request = new sql.Request();
+
+    request.input('iEmployeeId', sql.Int, iEmployeeId);
+
+    const isCheckinQuery = `
+      DECLARE @employeeId INT = @iEmployeeId;
+
+      SELECT TOP(1)
+        CASE 
+          WHEN bCheckStatus = 1 THEN 'CheckedOut'
+          WHEN bCheckStatus = 0 THEN 'CheckedIn'
+          ELSE 'NoRecord'
+        END AS CheckinStatus
+      FROM tblEmployeeAttendence
+      WHERE iEmployeeId = @employeeId
+      ORDER BY dtCreateDate DESC;
+    `;
+
+    const resultCheckin = await request.query(isCheckinQuery);
+    const checkinStatus = resultCheckin.recordset[0]?.CheckinStatus || 'NoRecord';
+
+    if (checkinStatus === 'CheckedIn') {
+      return res.status(400).json({ status: false, message: "User Already CheckedIn" });
+    }
+
+    // If not checked in, proceed to insert the record
+    request.input('bShift1', sql.Bit, bShift1);
+    request.input('bShift2', sql.Bit, bShift2);
+    request.input('bShift3', sql.Bit, bShift3);
+    request.input('bShift4', sql.Bit, bShift4);
+    request.input('iCreateBy', sql.Int, iCreateBy);
+
+    const insertQuery = `
+      INSERT INTO [ERP].[dbo].[tblEmployeeAttendence]
+      ([iEmployeeId], [dtCreateDate], [bShift1], [bShift2], [bShift3], [bShift4], [iCreateBy], [bCheckStatus])
+      VALUES
+      (@iEmployeeId, GETDATE(), @bShift1, @bShift2, @bShift3, @bShift4, @iCreateBy, 0);
+    `;
+
+    await request.query(insertQuery);
+
+    return res.json({ status: true, message: "Checked In Successfully" });
+
+  } catch (err) {
+    console.error('Error executing SQL query:', err);
+    return res.status(500).json({ error: 'Error executing SQL query.' });
+  }
+});
+
+//checkout Employee Attendence
+app.post('/checkOut', verifyToken, async (req, res) => {
+  const { iEmployeeId, iCreateBy } = req.body;
+
+  try {
+    const request = new sql.Request();
+
+    request.input('iEmployeeId', sql.Int, iEmployeeId);
+
+    const checkinStatusQuery = `
+      DECLARE @employeeId INT = @iEmployeeId;
+
+      SELECT TOP(1)
+        CASE 
+          WHEN bCheckStatus = 1 THEN 'CheckedOut'
+          WHEN bCheckStatus = 0 THEN 'CheckedIn'
+          ELSE 'NoRecord'
+        END AS CheckinStatus
+      FROM tblEmployeeAttendence
+      WHERE iEmployeeId = @employeeId
+      ORDER BY dtCreateDate DESC;
+    `;
+
+    const checkinStatusResult = await request.query(checkinStatusQuery);
+    const checkinStatus = checkinStatusResult.recordset[0]?.CheckinStatus || 'NoRecord';
+
+    if (checkinStatus === 'CheckedOut') {
+      return res.status(400).json({ status: false, message: "User Already CheckedOut" });
+    } else if (checkinStatus === 'NoRecord') {
+      return res.status(400).json({ status: false, message: "No attendance record found for the user" });
+    }
+
+    // If CheckedIn, proceed to insert the record with all shifts set to 0
+    request.input('iCreateBy', sql.Int, iCreateBy);
+
+    const insertQuery = `
+      INSERT INTO [ERP].[dbo].[tblEmployeeAttendence]
+      ([iEmployeeId], [dtCreateDate], [bShift1], [bShift2], [bShift3], [bShift4], [iCreateBy], [bCheckStatus])
+      VALUES
+      (@iEmployeeId, GETDATE(), 0, 0, 0, 0, @iCreateBy, 1);
+    `;
+
+    await request.query(insertQuery);
+
+    return res.json({ status: true, message: "Checked Out Successfully" });
+
+  } catch (err) {
+    console.error('Error executing SQL query:', err);
+    return res.status(500).json({ error: 'Error executing SQL query.' });
+  }
+});
+
+//checkin Status
+app.get('/checkinStatus',verifyToken, async (req, res) => {
+  const iEmployeeId = req.query.iEmployeeId;
+
+  try {
+    const request = new sql.Request();
+
+    request.input('iEmployeeId',  sql.Int, iEmployeeId);
+
+    const isCheckinQuery = `
+      SELECT TOP(1) bCheckStatus 
+      FROM tblEmployeeAttendence
+      WHERE iEmployeeId = @iEmployeeId
+      ORDER BY dtCreateDate DESC;`;
+
+    const resultCheckin = await request.query(isCheckinQuery);
+    const isCheckin = resultCheckin.recordset.length > 0 ? resultCheckin.recordset[0].bCheckStatus : null;
+
+    if (isCheckin === true) {
+      return res.json({ "status": false, message: "CheckedOut" });
+    } else {
+      return res.json({ "status": true, message: "CheckedIn" });
+    }
+
+  } catch (err) {
+    console.error('Error executing SQL query:', err);
+    return res.status(500).json({ error: 'Error executing SQL query.' });
+  }
+});
   //Get All employee
   app.get('/getAllEmployeeData',verifyToken, async (req, res) => {
   
