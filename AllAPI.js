@@ -336,7 +336,7 @@ app.post('/checkin', async (req, res) => {
 });
 
 //checkout Employee Attendence
-app.post('/checkOut', verifyToken, async (req, res) => {
+app.post('/checkOut', async (req, res) => {
   const { iEmployeeId, iCreateBy } = req.body;
 
   try {
@@ -345,24 +345,24 @@ app.post('/checkOut', verifyToken, async (req, res) => {
     request.input('iEmployeeId', sql.Int, iEmployeeId);
 
     const checkinStatusQuery = `
-      DECLARE @employeeId INT = @iEmployeeId;
+    DECLARE @employeeId INT = @iEmployeeId;
 
-      SELECT TOP(1)
-        CASE 
-          WHEN bCheckStatus = 1 THEN 'CheckedOut'
-          WHEN bCheckStatus = 0 THEN 'CheckedIn'
-          ELSE 'NoRecord'
-        END AS CheckinStatus
-      FROM tblEmployeeAttendence
-      WHERE iEmployeeId = @employeeId
-      ORDER BY dtCreateDate DESC;
-    `;
+    SELECT TOP(1)
+      CASE 
+        WHEN bCheckStatus = 1 THEN 'CheckedOut'
+        WHEN bCheckStatus = 0 THEN 'CheckedIn'
+        ELSE 'NoRecord'
+      END AS CheckinStatus
+    FROM tblEmployeeAttendence
+    WHERE iEmployeeId = @employeeId
+    ORDER BY dtCreateDate DESC;`
+    ;
 
     const checkinStatusResult = await request.query(checkinStatusQuery);
     const checkinStatus = checkinStatusResult.recordset[0]?.CheckinStatus || 'NoRecord';
 
     if (checkinStatus === 'CheckedOut') {
-      return res.status(400).json({ status: false, message: "User Already CheckedOut" });
+      return res.status(400).json({ status: false, message: "User Already CheckedOut for this shift" });
     } else if (checkinStatus === 'NoRecord') {
       return res.status(400).json({ status: false, message: "No attendance record found for the user" });
     }
@@ -386,6 +386,7 @@ app.post('/checkOut', verifyToken, async (req, res) => {
     return res.status(500).json({ error: 'Error executing SQL query.' });
   }
 });
+
 
 //checkin Status
 app.get('/checkinStatus',verifyToken, async (req, res) => {
