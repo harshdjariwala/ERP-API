@@ -246,7 +246,7 @@ app.post('/insertEmployeeData',verifyToken, async (req, res) => {
 
 // Checkin Employee Attendence
 
-app.post('/checkin', async (req, res) => {
+app.post('/checkin',verifyToken, async (req, res) => {
   const { iEmployeeId, iCreateBy } = req.body;
 
   try {
