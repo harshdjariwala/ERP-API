@@ -277,17 +277,55 @@ app.post('/checkin', verifyToken, async (req, res) => {
     }
 
     // If not checked in, proceed to insert the record
-    request.input('bShift1', sql.Bit, bShift1);
-    request.input('bShift2', sql.Bit, bShift2);
-    request.input('bShift3', sql.Bit, bShift3);
-    request.input('bShift4', sql.Bit, bShift4);
+    // request.input('bShift1', sql.Bit, bShift1);
+    // request.input('bShift2', sql.Bit, bShift2);
+    // request.input('bShift3', sql.Bit, bShift3);
+    // request.input('bShift4', sql.Bit, bShift4);
     request.input('iCreateBy', sql.Int, iCreateBy);
 
     const insertQuery = `
-      INSERT INTO [ERP].[dbo].[tblEmployeeAttendence]
-      ([iEmployeeId], [dtCreateDate], [bShift1], [bShift2], [bShift3], [bShift4], [iCreateBy], [bCheckStatus])
-      VALUES
-      (@iEmployeeId, GETDATE(), @bShift1, @bShift2, @bShift3, @bShift4, @iCreateBy, 0);
+    DECLARE @iEmployeeId INT = @iEmployeeId-- Your Employee ID
+    DECLARE @iCreateBy INT = iCreateBy-- Your Created By ID
+    DECLARE @bShift1 BIT
+    DECLARE @bShift2 BIT
+    DECLARE @bShift3 BIT
+    DECLARE @bShift4 BIT
+    
+    -- Set the shift values based on the current time
+    SET @bShift1 = CASE
+                      WHEN CONVERT(TIME, GETDATE()) BETWEEN '00:00:00' AND '04:00:00' THEN 1
+                      ELSE 0
+                   END
+    
+    SET @bShift2 = CASE
+                      WHEN CONVERT(TIME, GETDATE()) BETWEEN '10:00:00' AND '13:00:00' THEN 1
+                      ELSE 0
+                   END
+    
+    SET @bShift3 = CASE
+                      WHEN CONVERT(TIME, GETDATE()) BETWEEN '14:00:00' AND '18:00:00' THEN 1
+                      ELSE 0
+                   END
+    
+    SET @bShift4 = CASE
+                      WHEN CONVERT(TIME, GETDATE()) BETWEEN '19:00:00' AND '23:00:00' THEN 1
+                      ELSE 0
+                   END
+    
+    -- Check if there is any valid shift
+    IF @bShift1 = 0 AND @bShift2 = 0 AND @bShift3 = 0 AND @bShift4 = 0
+    BEGIN
+        PRINT 'Invalid Shift: Time is out of scope for all shifts.';
+    END
+    ELSE
+    BEGIN
+        -- Insert into the table
+        INSERT INTO [ERP].[dbo].[tblEmployeeAttendence]
+              ([iEmployeeId], [dtCreateDate], [bShift1], [bShift2], [bShift3], [bShift4], [iCreateBy], [bCheckStatus])
+              VALUES
+              (@iEmployeeId, GETDATE(), @bShift1, @bShift2, @bShift3, @bShift4, @iCreateBy, 0);
+    END
+    
     `;
 
     await request.query(insertQuery);
