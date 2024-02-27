@@ -416,7 +416,7 @@ app.get('/checkinStatus', async (req, res) => {
         ELSE 'NoRecord'
       END AS cuurentStatus
     FROM tblEmployeeAttendence
-    WHERE employeeId = @iEmployeeId
+    WHERE iEmployeeId = @employeeId
     ORDER BY dtCreateDate DESC;`;
 
     const result = await request.query(isCheckinQuery);
@@ -433,6 +433,7 @@ app.get('/checkinStatus', async (req, res) => {
     return res.status(500).json({ error: 'Error executing SQL query.' });
   }
 });
+
 
   //Get All employee
   app.get('/getAllEmployeeData',verifyToken, async (req, res) => {
