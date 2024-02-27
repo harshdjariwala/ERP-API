@@ -245,10 +245,8 @@ app.post('/insertEmployeeData',verifyToken, async (req, res) => {
   });
 
 // Checkin Employee Attendence
-app.post('/checkin', verifyToken, async (req, res) => {
-  const {
-    iEmployeeId, bShift1, bShift2, bShift3, bShift4, iCreateBy
-  } = req.body;
+app.post('/checkin',verifyToken, async (req, res) => {
+  const { iEmployeeId, iCreateBy } = req.body;
 
   try {
     const request = new sql.Request();
@@ -256,7 +254,7 @@ app.post('/checkin', verifyToken, async (req, res) => {
     request.input('iEmployeeId', sql.Int, iEmployeeId);
 
     const isCheckinQuery = `
-      DECLARE @employeeId INT = @iEmployeeId;
+      DECLARE @employeeId INT = ${iEmployeeId};
 
       SELECT TOP(1)
         CASE 
@@ -276,56 +274,47 @@ app.post('/checkin', verifyToken, async (req, res) => {
       return res.status(400).json({ status: false, message: "User Already CheckedIn" });
     }
 
-    // If not checked in, proceed to insert the record
-    // request.input('bShift1', sql.Bit, bShift1);
-    // request.input('bShift2', sql.Bit, bShift2);
-    // request.input('bShift3', sql.Bit, bShift3);
-    // request.input('bShift4', sql.Bit, bShift4);
     request.input('iCreateBy', sql.Int, iCreateBy);
 
     const insertQuery = `
-    DECLARE @iEmployeeId INT = @iEmployeeId-- Your Employee ID
-    DECLARE @iCreateBy INT = iCreateBy-- Your Created By ID
-    DECLARE @bShift1 BIT
-    DECLARE @bShift2 BIT
-    DECLARE @bShift3 BIT
-    DECLARE @bShift4 BIT
-    
-    -- Set the shift values based on the current time
-    SET @bShift1 = CASE
-                      WHEN CONVERT(TIME, GETDATE()) BETWEEN '00:00:00' AND '04:00:00' THEN 1
-                      ELSE 0
-                   END
-    
-    SET @bShift2 = CASE
-                      WHEN CONVERT(TIME, GETDATE()) BETWEEN '10:00:00' AND '13:00:00' THEN 1
-                      ELSE 0
-                   END
-    
-    SET @bShift3 = CASE
-                      WHEN CONVERT(TIME, GETDATE()) BETWEEN '14:00:00' AND '18:00:00' THEN 1
-                      ELSE 0
-                   END
-    
-    SET @bShift4 = CASE
-                      WHEN CONVERT(TIME, GETDATE()) BETWEEN '19:00:00' AND '23:00:00' THEN 1
-                      ELSE 0
-                   END
-    
-    -- Check if there is any valid shift
-    IF @bShift1 = 0 AND @bShift2 = 0 AND @bShift3 = 0 AND @bShift4 = 0
-    BEGIN
-        PRINT 'Invalid Shift: Time is out of scope for all shifts.';
-    END
-    ELSE
-    BEGIN
-        -- Insert into the table
-        INSERT INTO [ERP].[dbo].[tblEmployeeAttendence]
-              ([iEmployeeId], [dtCreateDate], [bShift1], [bShift2], [bShift3], [bShift4], [iCreateBy], [bCheckStatus])
-              VALUES
-              (@iEmployeeId, GETDATE(), @bShift1, @bShift2, @bShift3, @bShift4, @iCreateBy, 0);
-    END
-    
+      DECLARE @empId INT = ${iEmployeeId};
+      DECLARE @createdById INT = ${iCreateBy};
+      DECLARE @shift1 BIT;
+      DECLARE @shift2 BIT;
+      DECLARE @shift3 BIT;
+      DECLARE @shift4 BIT;
+
+      SET @shift1 = CASE
+                        WHEN CONVERT(TIME, GETDATE()) BETWEEN '00:00:00' AND '04:00:00' THEN 1
+                        ELSE 0
+                     END;
+
+      SET @shift2 = CASE
+                        WHEN CONVERT(TIME, GETDATE()) BETWEEN '10:00:00' AND '13:00:00' THEN 1
+                        ELSE 0
+                     END;
+
+      SET @shift3 = CASE
+                        WHEN CONVERT(TIME, GETDATE()) BETWEEN '14:00:00' AND '18:00:00' THEN 1
+                        ELSE 0
+                     END;
+
+      SET @shift4 = CASE
+                        WHEN CONVERT(TIME, GETDATE()) BETWEEN '19:00:00' AND '23:00:00' THEN 1
+                        ELSE 0
+                     END;
+
+      IF @shift1 = 0 AND @shift2 = 0 AND @shift3 = 0 AND @shift4 = 0
+      BEGIN
+          PRINT 'Invalid Shift: Time is out of scope for all shifts.';
+      END
+      ELSE
+      BEGIN
+          INSERT INTO [ERP].[dbo].[tblEmployeeAttendence]
+                ([iEmployeeId], [dtCreateDate], [bShift1], [bShift2], [bShift3], [bShift4], [iCreateBy], [bCheckStatus])
+                VALUES
+                (@empId, GETDATE(), @shift1, @shift2, @shift3, @shift4, @createdById, 0);
+      END;
     `;
 
     await request.query(insertQuery);
