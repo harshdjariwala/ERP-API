@@ -245,7 +245,7 @@ app.post('/insertEmployeeData',verifyToken, async (req, res) => {
   });
 
 // Checkin Employee Attendence
-app.post('/checkin',verifyToken, async (req, res) => {
+app.post('/checkin', async (req, res) => {
   const { iEmployeeId, iCreateBy } = req.body;
 
   try {
@@ -255,7 +255,9 @@ app.post('/checkin',verifyToken, async (req, res) => {
 
     const isCheckinQuery = `
       DECLARE @employeeId INT = ${iEmployeeId};
+      DECLARE @shiftCheckinStatus NVARCHAR(50);
 
+      -- Check the status for the current shift
       SELECT TOP(1)
         CASE 
           WHEN bCheckStatus = 1 THEN 'CheckedOut'
@@ -264,6 +266,10 @@ app.post('/checkin',verifyToken, async (req, res) => {
         END AS CheckinStatus
       FROM tblEmployeeAttendence
       WHERE iEmployeeId = @employeeId
+        AND ((CONVERT(TIME, GETDATE()) BETWEEN '00:00:00' AND '04:00:00' AND bShift1 = 1)
+            OR (CONVERT(TIME, GETDATE()) BETWEEN '10:00:00' AND '13:00:00' AND bShift2 = 1)
+            OR (CONVERT(TIME, GETDATE()) BETWEEN '14:00:00' AND '18:00:00' AND bShift3 = 1)
+            OR (CONVERT(TIME, GETDATE()) BETWEEN '19:00:00' AND '23:00:00' AND bShift4 = 1))
       ORDER BY dtCreateDate DESC;
     `;
 
@@ -271,7 +277,9 @@ app.post('/checkin',verifyToken, async (req, res) => {
     const checkinStatus = resultCheckin.recordset[0]?.CheckinStatus || 'NoRecord';
 
     if (checkinStatus === 'CheckedIn') {
-      return res.status(400).json({ status: false, message: "User Already CheckedIn" });
+      return res.status(400).json({ status: false, message: "User Already CheckedIn for this shift" });
+    } else if (checkinStatus === 'CheckedOut') {
+      return res.status(400).json({ status: false, message: "User Already CheckedOut for this shift" });
     }
 
     request.input('iCreateBy', sql.Int, iCreateBy);
