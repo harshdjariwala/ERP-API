@@ -407,7 +407,7 @@ app.get('/checkinStatus', async (req, res) => {
     request.input('iEmployeeId', sql.Int, iEmployeeId);
 
     const isCheckinQuery = `
-    DECLARE @employeeId INT = @iEmployeeId;
+    DECLARE @iEmployeeId INT = @iEmployeeId;
 
     SELECT TOP(1)
       CASE 
@@ -416,7 +416,7 @@ app.get('/checkinStatus', async (req, res) => {
         ELSE 'NoRecord'
       END AS cuurentStatus
     FROM tblEmployeeAttendence
-    WHERE iEmployeeId = @employeeId
+    WHERE iEmployeeId = @iEmployeeId
     ORDER BY dtCreateDate DESC;`;
 
     const result = await request.query(isCheckinQuery);
