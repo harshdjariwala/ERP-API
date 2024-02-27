@@ -389,7 +389,7 @@ app.post('/checkOut', async (req, res) => {
 
 
 //checkin Status
-app.get('/checkinStatus',verifyToken, async (req, res) => {
+app.get('/checkinStatus', async (req, res) => {
   const iEmployeeId = req.query.iEmployeeId;
 
   try {
@@ -405,11 +405,18 @@ app.get('/checkinStatus',verifyToken, async (req, res) => {
         WHEN bCheckStatus = 1 THEN 'CheckedOut'
         WHEN bCheckStatus = 0 THEN 'CheckedIn'
         ELSE 'NoRecord'
-      END AS CheckinStatus
+      END AS cuurentStatus
     FROM tblEmployeeAttendence
     WHERE iEmployeeId = @employeeId
     ORDER BY dtCreateDate DESC;`;
+
     const result = await request.query(isCheckinQuery);
+
+    if (result.recordset.length === 0) {
+      // No record found
+      return res.json({ cuurentStatus: 'NULL' });
+    }
+
     res.json(result.recordset[0]);
 
   } catch (err) {
