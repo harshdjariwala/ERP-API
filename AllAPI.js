@@ -245,6 +245,7 @@ app.post('/insertEmployeeData',verifyToken, async (req, res) => {
   });
 
 // Checkin Employee Attendence
+
 app.post('/checkin', async (req, res) => {
   const { iEmployeeId, iCreateBy } = req.body;
 
@@ -291,6 +292,7 @@ app.post('/checkin', async (req, res) => {
       DECLARE @shift2 BIT;
       DECLARE @shift3 BIT;
       DECLARE @shift4 BIT;
+      DECLARE @errorMessage NVARCHAR(100) = '';
 
       SET @shift1 = CASE
                         WHEN CONVERT(TIME, GETDATE()) BETWEEN '00:00:00' AND '04:00:00' THEN 1
@@ -314,7 +316,7 @@ app.post('/checkin', async (req, res) => {
 
       IF @shift1 = 0 AND @shift2 = 0 AND @shift3 = 0 AND @shift4 = 0
       BEGIN
-          PRINT 'Invalid Shift: Time is out of scope for all shifts.';
+          SET @errorMessage = 'Invalid Shift: Time is out of scope for all shifts.';
       END
       ELSE
       BEGIN
@@ -323,11 +325,18 @@ app.post('/checkin', async (req, res) => {
                 VALUES
                 (@empId, GETDATE(), @shift1, @shift2, @shift3, @shift4, @createdById, 0);
       END;
+
+      SELECT @errorMessage AS ErrorMessage;  -- Include the error message in the result set
     `;
 
-    await request.query(insertQuery);
+    const resultInsert = await request.query(insertQuery);
+    const errorMessage = resultInsert.recordset[0]?.ErrorMessage || '';  // Retrieve the error message from the result set
 
-    return res.json({ status: true, message: "Checked In Successfully" });
+    if (errorMessage) {
+      return res.status(400).json({ status: false, message: errorMessage });
+    } else {
+      return res.json({ status: true, message: "Checked In Successfully" });
+    }
 
   } catch (err) {
     console.error('Error executing SQL query:', err);
