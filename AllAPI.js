@@ -246,7 +246,7 @@ app.post('/insertEmployeeData',verifyToken, async (req, res) => {
 
 // Checkin Employee Attendence
 
-app.post('/checkin', async (req, res) => {
+app.post('/checkin',verifyToken, async (req, res) => {
   const { iEmployeeId, iCreateBy } = req.body;
 
   try {
@@ -356,7 +356,7 @@ app.post('/checkin', async (req, res) => {
 });
 
 //checkout Employee Attendence
-app.post('/checkOut', async (req, res) => {
+app.post('/checkOut',verifyToken, async (req, res) => {
   const { iEmployeeId, iCreateBy } = req.body;
 
   try {
@@ -407,7 +407,7 @@ app.post('/checkOut', async (req, res) => {
   }
 });
 
-app.get('/getAllEmployeeAttendance', async (req, res) => {
+app.get('/getAllEmployeeAttendance',verifyToken, async (req, res) => {
   try {
     const request = new sql.Request();
     const result = await request.query(`
