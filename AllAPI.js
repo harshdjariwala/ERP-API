@@ -407,6 +407,29 @@ app.post('/checkOut', async (req, res) => {
   }
 });
 
+app.get('/getAllEmployeeAttendance', async (req, res) => {
+  try {
+    const request = new sql.Request();
+    const result = await request.query(`
+      SELECT 
+        ed.iId AS employeeId,
+        CONCAT(ed.sFirstName, ' ', ed.sLastName) AS FullName,
+        MAX(CASE WHEN ea.bCheckStatus = 0 THEN ea.dtCreateDate END) AS checkIn,
+        MAX(CASE WHEN ea.bCheckStatus = 1 THEN ea.dtCreateDate END) AS checkOut
+      FROM 
+        tblEmployeeData ed
+      LEFT JOIN 
+        tblEmployeeAttendence ea ON ed.iId = ea.iEmployeeId
+      GROUP BY 
+        ed.iId, CONCAT(ed.sFirstName, ' ', ed.sLastName);
+    `);
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error('Error executing SQL query:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 //checkin Status
 app.get('/checkinStatus', async (req, res) => {
