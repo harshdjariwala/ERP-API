@@ -246,7 +246,7 @@ app.post('/insertEmployeeData',verifyToken, async (req, res) => {
 
 // Checkin Employee Attendence
 
-app.post('/checkin',verifyToken, async (req, res) => {
+app.post('/checkin', async (req, res) => {
   const { iEmployeeId, iCreateBy } = req.body;
 
   try {
@@ -257,6 +257,7 @@ app.post('/checkin',verifyToken, async (req, res) => {
     const isCheckinQuery = `
       DECLARE @employeeId INT = ${iEmployeeId};
       DECLARE @shiftCheckinStatus NVARCHAR(50);
+      DECLARE @lastCheckinDate DATETIME;
 
       -- Check the status for the current shift
       SELECT TOP(1)
@@ -264,7 +265,8 @@ app.post('/checkin',verifyToken, async (req, res) => {
           WHEN bCheckStatus = 1 THEN 'CheckedOut'
           WHEN bCheckStatus = 0 THEN 'CheckedIn'
           ELSE 'NoRecord'
-        END AS CheckinStatus
+        END AS CheckinStatus,
+        dtCreateDate AS LastCheckinDate
       FROM tblEmployeeAttendence
       WHERE iEmployeeId = @employeeId
         AND ((CONVERT(TIME, GETDATE()) BETWEEN '00:00:00' AND '04:00:00' AND bShift1 = 1)
@@ -276,9 +278,18 @@ app.post('/checkin',verifyToken, async (req, res) => {
 
     const resultCheckin = await request.query(isCheckinQuery);
     const checkinStatus = resultCheckin.recordset[0]?.CheckinStatus || 'NoRecord';
+    const lastCheckinDate = resultCheckin.recordset[0]?.LastCheckinDate;
 
-    if (checkinStatus === 'CheckedIn') {
-      return res.status(400).json({ status: false, message: "User Already CheckedIn for this shift" });
+    // Check if last check-in date is the same as the current date
+    const currentDate = new Date();
+    if (
+      checkinStatus === 'CheckedIn' &&
+      lastCheckinDate &&
+      new Date(lastCheckinDate).getDate() === currentDate.getDate() &&
+      new Date(lastCheckinDate).getMonth() === currentDate.getMonth() &&
+      new Date(lastCheckinDate).getFullYear() === currentDate.getFullYear()
+    ) {
+      return res.status(400).json({ status: false, message: "User Already CheckedIn for today's shift 1" });
     } else if (checkinStatus === 'CheckedOut') {
       return res.status(400).json({ status: false, message: "User Already CheckedOut for this shift" });
     }
