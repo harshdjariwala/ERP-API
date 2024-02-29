@@ -255,6 +255,7 @@ app.post('/checkin',verifyToken, async (req, res) => {
     request.input('iEmployeeId', sql.Int, iEmployeeId);
 
     const isCheckinQuery = `
+    USE ERP;
       DECLARE @employeeId INT = ${iEmployeeId};
       DECLARE @shiftCheckinStatus NVARCHAR(50);
       DECLARE @lastCheckinDate DATETIME;
@@ -297,6 +298,7 @@ app.post('/checkin',verifyToken, async (req, res) => {
     request.input('iCreateBy', sql.Int, iCreateBy);
 
     const insertQuery = `
+    USE ERP;
       DECLARE @empId INT = ${iEmployeeId};
       DECLARE @createdById INT = ${iCreateBy};
       DECLARE @shift1 BIT;
@@ -365,6 +367,7 @@ app.post('/checkOut',verifyToken, async (req, res) => {
     request.input('iEmployeeId', sql.Int, iEmployeeId);
 
     const checkinStatusQuery = `
+    USE ERP;
     DECLARE @employeeId INT = @iEmployeeId;
 
     SELECT TOP(1)
@@ -391,6 +394,7 @@ app.post('/checkOut',verifyToken, async (req, res) => {
     request.input('iCreateBy', sql.Int, iCreateBy);
 
     const insertQuery = `
+    USE ERP;
       INSERT INTO [ERP].[dbo].[tblEmployeeAttendence]
       ([iEmployeeId], [dtCreateDate], [bShift1], [bShift2], [bShift3], [bShift4], [iCreateBy], [bCheckStatus])
       VALUES
@@ -411,6 +415,7 @@ app.get('/getAllEmployeeAttendance',verifyToken, async (req, res) => {
   try {
     const request = new sql.Request();
     const result = await request.query(`
+      USE ERP;
       SELECT 
         ed.iId AS employeeId,
         CONCAT(ed.sFirstName, ' ', ed.sLastName) AS FullName,
@@ -441,6 +446,7 @@ app.get('/checkinStatus', async (req, res) => {
     request.input('iEmployeeId', sql.Int, iEmployeeId);
 
     const isCheckinQuery = `
+    USE ERP;
     DECLARE @employeeId INT = @iEmployeeId;
 
     SELECT TOP(1)
@@ -477,7 +483,9 @@ app.get('/checkinStatus', async (req, res) => {
     try {
       const request = new sql.Request();
   
-      const query = `SELECT iId, sFirstName, sLastName FROM tblEmployeeData`;
+      const query = `
+      USE ERP; 
+      SELECT iId, sFirstName, sLastName FROM tblEmployeeData`;
   
       const result = await request.query(query);
   
