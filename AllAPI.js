@@ -244,6 +244,7 @@ app.post('/insertEmployeeData',verifyToken, async (req, res) => {
     }
   });
 
+  
 // Checkin Employee Attendence
 
 app.post('/checkin',verifyToken, async (req, res) => {
@@ -1096,6 +1097,486 @@ app.post('/setPassword',verifyToken, async (req, res) => {
   }
 });
 
+//get Permanent Employee
+app.get('/getPermanentEmployee',verifyToken, async (req, res) => {
+  const { iEmployeeId } = req.query; // Change this line to use req.query
+
+  try {
+    const request = new sql.Request();
+    request.input('iEmployeeId', sql.Int, iEmployeeId);
+
+    const result = await request.query(`
+      USE ERP;
+      SELECT
+        *
+      FROM ERP.dbo.tblPermanentEmployeeData
+      WHERE iEmployeeId = @iEmployeeId;
+    `);
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error('Error executing SQL query:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+//get Intern Employee
+app.get('/getInternEmployee',verifyToken, async (req, res) => {
+  const { iEmployeeId } = req.query; // Change this line to use req.query
+
+  try {
+    const request = new sql.Request();
+    request.input('iEmployeeId', sql.Int, iEmployeeId);
+
+    const result = await request.query(`
+    USE ERP;
+      SELECT
+        *
+      FROM ERP.dbo.tblInternData
+      WHERE iEmployeeId = @iEmployeeId;
+    `);
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error('Error executing SQL query:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+//get Freelance
+app.get('/getFreelanceDetails',verifyToken, async (req, res) => {
+  const { iEmployeeId } = req.query; // Change this line to use req.query
+
+  try {
+    const request = new sql.Request();
+    request.input('iEmployeeId', sql.Int, iEmployeeId);
+
+    const result = await request.query(`
+    USE ERP;
+      SELECT
+        *
+      FROM ERP.dbo.tblFreeLanceDetails
+      WHERE iEmployeeId = @iEmployeeId;
+    `);
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error('Error executing SQL query:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+//get Contractor
+app.get('/getContractorDetails', verifyToken, async (req, res) => {
+  const { iEmployeeId } = req.query; // Change this line to use req.query
+
+  try {
+    const request = new sql.Request();
+    request.input('iEmployeeId', sql.Int, iEmployeeId);
+
+    const result = await request.query(`
+    USE ERP;
+      SELECT
+        *
+      FROM ERP.dbo.tblContractorDetails
+      WHERE iEmployeeId = @iEmployeeId;
+    `);
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error('Error executing SQL query:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// get CoOperate
+app.get('/getCoOperate',verifyToken, async (req, res) => {
+  const { iEmployeeId } = req.query; // Change this line to use req.query
+
+  try {
+    const request = new sql.Request();
+    request.input('iEmployeeId', sql.Int, iEmployeeId);
+
+    const result = await request.query(`
+      SELECT
+        *
+      FROM ERP.dbo.tblCoOperateData
+      WHERE iEmployeeId = @iEmployeeId;
+    `);
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error('Error executing SQL query:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+//insert permanenet
+
+app.post('/insertPermanentEmployeeData',verifyToken, async (req, res) => {
+  const {
+    sFirstName, sMiddleName, sLastName, sGender, sMaritalStatus, sAdd1, sAdd2,
+    sCity, sState, sPinCode, sPhoneNumber, sEmailId, sAadhaarNumber, sPanNumber,
+    dtEmploymentStartDate, dtEmployementEndDate, sJobTitle, sManagedBy, sDepartmentName,
+    iEmploymentType, iCTC, iCreatedBy
+  } = req.body;
+
+  try {
+    const request = new sql.Request();
+
+    request.input('sFirstName', sql.NVarChar, sFirstName);
+    request.input('sMiddleName', sql.NVarChar, sMiddleName);
+    request.input('sLastName', sql.NVarChar, sLastName);
+    request.input('sGender', sql.NVarChar, sGender);
+    request.input('sMaritalStatus', sql.NVarChar, sMaritalStatus);
+    request.input('sAdd1', sql.NVarChar, sAdd1);
+    request.input('sAdd2', sql.NVarChar, sAdd2);
+    request.input('sCity', sql.NVarChar, sCity);
+    request.input('sState', sql.NVarChar, sState);
+    request.input('sPinCode', sql.NVarChar, sPinCode);
+    request.input('sPhoneNumber', sql.NVarChar, sPhoneNumber);
+    request.input('sEmailId', sql.NVarChar, sEmailId);
+    request.input('sAadhaarNumber', sql.NVarChar, sAadhaarNumber);
+    request.input('sPanNumber', sql.NVarChar, sPanNumber);
+    request.input('dtEmploymentStartDate', sql.DATE, dtEmploymentStartDate);
+    request.input('dtEmployementEndDate', sql.DATE, dtEmployementEndDate);
+    request.input('sJobTitle', sql.NVarChar, sJobTitle);
+    request.input('sManagedBy', sql.NVarChar, sManagedBy);
+    request.input('sDepartmentName', sql.NVarChar, sDepartmentName);
+    request.input('iEmploymentType', sql.INT, iEmploymentType);
+    request.input('iCTC', sql.INT, iCTC);
+    request.input('iCreatedBy', sql.INT, iCreatedBy);
+   
+
+    const query = `
+    USE ERP;
+      INSERT INTO [ERP].[dbo].[tblPermanentEmployeeData] 
+      (
+        [sFirstName], [sMiddleName], [sLastName], [sGender], [sMaritalStatus], 
+        [sAdd1], [sAdd2], [sCity], [sState], [sPinCode], [sPhoneNumber], [sEmailId], 
+        [sAadhaarNumber], [sPanNumber], [dtEmploymentStartDate], [dtEmployementEndDate], 
+        [sJobTitle], [sManagedBy], [sDepartmentName], [iEmploymentType], [iCTC], 
+        [iCreatedBy], [dtCreateDate]
+      )
+      VALUES
+      (
+        @sFirstName, @sMiddleName, @sLastName, @sGender, @sMaritalStatus, 
+        @sAdd1, @sAdd2, @sCity, @sState, @sPinCode, @sPhoneNumber, @sEmailId, 
+        @sAadhaarNumber, @sPanNumber, @dtEmploymentStartDate, @dtEmployementEndDate, 
+        @sJobTitle, @sManagedBy, @sDepartmentName, @iEmploymentType, @iCTC, 
+        @iCreatedBy, GETDATE()
+      )
+    `;
+
+    const result = await request.query(query);
+
+    res.json({ message: "Inserted Successfully" });
+  } catch (err) {
+    console.error('Error executing SQL query:', err);
+    res.status(500).json({ error: 'Error executing SQL query.' });
+  }
+});
+// insert Intern Data
+app.post('/insertInternData',verifyToken, async (req, res) => {
+  const {
+    sFirstName,
+    sMiddleName,
+    sLastName,
+    sGender,
+    sMaritalStatus,
+    sAdd1,
+    sAdd2,
+    sCity,
+    sState,
+    sPinCode,
+    sPhoneNumber,
+    sEmailId,
+    sAadhaarNumber,
+    sPanNumber,
+    sInternshipDetails,
+    dtInternshipStartDate,
+    dtInternshipEndDate,
+    sInternTitle,
+    sManagedBy,
+    sDepartmentName,
+    iCTC,
+    iCreatedBy,
+    dtCreateDate,
+  } = req.body;
+
+  try {
+    const request = new sql.Request();
+
+    request.input('sFirstName', sql.NVarChar, sFirstName);
+    request.input('sMiddleName', sql.NVarChar, sMiddleName);
+    request.input('sLastName', sql.NVarChar, sLastName);
+    request.input('sGender', sql.NVarChar, sGender);
+    request.input('sMaritalStatus', sql.NVarChar, sMaritalStatus);
+    request.input('sAdd1', sql.NVarChar, sAdd1);
+    request.input('sAdd2', sql.NVarChar, sAdd2);
+    request.input('sCity', sql.NVarChar, sCity);
+    request.input('sState', sql.NVarChar, sState);
+    request.input('sPinCode', sql.NVarChar, sPinCode);
+    request.input('sPhoneNumber', sql.NVarChar, sPhoneNumber);
+    request.input('sEmailId', sql.NVarChar, sEmailId);
+    request.input('sAadhaarNumber', sql.NVarChar, sAadhaarNumber);
+    request.input('sPanNumber', sql.NVarChar, sPanNumber);
+    request.input('sInternshipDetails', sql.NVarChar, sInternshipDetails);
+    request.input('dtInternshipStartDate', sql.Date, dtInternshipStartDate);
+    request.input('dtInternshipEndDate', sql.Date, dtInternshipEndDate);
+    request.input('sInternTitle', sql.NVarChar, sInternTitle);
+    request.input('sManagedBy', sql.NVarChar, sManagedBy);
+    request.input('sDepartmentName', sql.NVarChar, sDepartmentName);
+    request.input('iCTC', sql.Int, iCTC);
+    request.input('iCreatedBy', sql.Int, iCreatedBy);
+    request.input('dtCreateDate', sql.DateTime, dtCreateDate);
+
+    const query = `
+    USE ERP;
+      INSERT INTO [tblInternData]
+      (
+        [sFirstName],
+        [sMiddleName],
+        [sLastName],
+        [sGender],
+        [sMaritalStatus],
+        [sAdd1],
+        [sAdd2],
+        [sCity],
+        [sState],
+        [sPinCode],
+        [sPhoneNumber],
+        [sEmailId],
+        [sAadhaarNumber],
+        [sPanNumber],
+        [sInternshipDetails],
+        [dtInternshipStartDate],
+        [dtInternshipEndDate],
+        [sInternTitle],
+        [sManagedBy],
+        [sDepartmentName],
+        [iCTC],
+        [iCreatedBy],
+        [dtCreateDate]
+      )
+      VALUES
+      (
+        @sFirstName,
+        @sMiddleName,
+        @sLastName,
+        @sGender,
+        @sMaritalStatus,
+        @sAdd1,
+        @sAdd2,
+        @sCity,
+        @sState,
+        @sPinCode,
+        @sPhoneNumber,
+        @sEmailId,
+        @sAadhaarNumber,
+        @sPanNumber,
+        @sInternshipDetails,
+        @dtInternshipStartDate,
+        @dtInternshipEndDate,
+        @sInternTitle,
+        @sManagedBy,
+        @sDepartmentName,
+        @iCTC,
+        @iCreatedBy,
+        @dtCreateDate
+      )`;
+
+    await request.query(query);
+
+    res.json({ message: 'Inserted Successfully' });
+  } catch (err) {
+    console.error('Error executing SQL query:', err);
+    res.status(500).json({ error: 'Error executing SQL query.' });
+  }
+});
+
+// insertFreeLanceDetails
+
+app.post('/insertFreeLanceDetails',verifyToken, async (req, res) => {
+  const {
+    sFirstName, sMiddleName, sLastName, sGender, sMaritalStatus, sAdd1, sAdd2, sCity, sState, sPinCode,
+    sPhoneNumber, sEmailId, sAadhaarNumber, sPanNumber, dtContractStartDate, dtContractEndDate, sFreelanceTitle,
+    sManagedBy, sDepartmentName, iContractAmt, iCreatedBy
+  } = req.body;
+
+  try {
+    const request = new sql.Request();
+
+    request.input('sFirstName', sql.NVarChar, sFirstName);
+    request.input('sMiddleName', sql.NVarChar, sMiddleName);
+    request.input('sLastName', sql.NVarChar, sLastName);
+    request.input('sGender', sql.NVarChar, sGender);
+    request.input('sMaritalStatus', sql.NVarChar, sMaritalStatus);
+    request.input('sAdd1', sql.NVarChar, sAdd1);
+    request.input('sAdd2', sql.NVarChar, sAdd2);
+    request.input('sCity', sql.NVarChar, sCity);
+    request.input('sState', sql.NVarChar, sState);
+    request.input('sPinCode', sql.NVarChar, sPinCode);
+    request.input('sPhoneNumber', sql.NVarChar, sPhoneNumber);
+    request.input('sEmailId', sql.NVarChar, sEmailId);
+    request.input('sAadhaarNumber', sql.NVarChar, sAadhaarNumber);
+    request.input('sPanNumber', sql.NVarChar, sPanNumber);
+    request.input('dtContractStartDate', sql.Date, dtContractStartDate);
+    request.input('dtContractEndDate', sql.Date, dtContractEndDate);
+    request.input('sFreelanceTitle', sql.NVarChar, sFreelanceTitle);
+    request.input('sManagedBy', sql.NVarChar, sManagedBy);
+    request.input('sDepartmentName', sql.NVarChar, sDepartmentName);
+    request.input('iContractAmt', sql.Int, iContractAmt);
+    request.input('iCreatedBy', sql.Int, iCreatedBy);
+
+    const query = `
+    USE ERP;
+      INSERT INTO [tblFreeLanceDetails]
+      (
+        [sFirstName], [sMiddleName], [sLastName], [sGender], [sMaritalStatus], [sAdd1], [sAdd2], [sCity],
+        [sState], [sPinCode], [sPhoneNumber], [sEmailId], [sAadhaarNumber], [sPanNumber], [dtContractStartDate],
+        [dtContractEndDate], [sFreelanceTitle], [sManagedBy], [sDepartmentName], [iContractAmt], [iCreatedBy], [dtCreateDate]
+      )
+      VALUES
+      (
+        @sFirstName, @sMiddleName, @sLastName, @sGender, @sMaritalStatus, @sAdd1, @sAdd2, @sCity, @sState, @sPinCode,
+        @sPhoneNumber, @sEmailId, @sAadhaarNumber, @sPanNumber, @dtContractStartDate, @dtContractEndDate, @sFreelanceTitle,
+        @sManagedBy, @sDepartmentName, @iContractAmt, @iCreatedBy, GETDATE()
+      )`;
+
+    const result = await request.query(query);
+
+    res.json({ message: "Inserted Successfully" });
+  } catch (err) {
+    console.error('Error executing SQL query:', err);
+    res.status(500).json({ error: 'Error executing SQL query.' });
+  }
+});
+
+// insert cooperate
+app.post('/insertCoOperateData',verifyToken, async (req, res) => {
+  const {
+    sCompanyName,
+    sCompanyDepartment,
+    sEmployeeName,
+    sAdd1,
+    sAdd2,
+    sCity,
+    sState,
+    sPinCode,
+    sCompanyContactNumber,
+    sCompanyEmailId,
+    sCompanyType,
+    sGSTNumber,
+    dtContractStartDate,
+    dtContractEndDate,
+    sContractSupervisor,
+    iCreatedBy
+  } = req.body;
+
+  try {
+    const request = new sql.Request();
+
+    request.input('sCompanyName', sql.NVarChar(255), sCompanyName);
+    request.input('sCompanyDepartment', sql.NVarChar(255), sCompanyDepartment);
+    request.input('sEmployeeName', sql.NVarChar(255), sEmployeeName);
+    request.input('sAdd1', sql.NVarChar(255), sAdd1);
+    request.input('sAdd2', sql.NVarChar(255), sAdd2);
+    request.input('sCity', sql.NVarChar(255), sCity);
+    request.input('sState', sql.NVarChar(255), sState);
+    request.input('sPinCode', sql.NVarChar(20), sPinCode);
+    request.input('sCompanyContactNumber', sql.NVarChar(15), sCompanyContactNumber);
+    request.input('sCompanyEmailId', sql.NVarChar(255), sCompanyEmailId);
+    request.input('sCompanyType', sql.NVarChar(255), sCompanyType);
+    request.input('sGSTNumber', sql.NVarChar(15), sGSTNumber);
+    request.input('dtContractStartDate', sql.Date, dtContractStartDate);
+    request.input('dtContractEndDate', sql.Date, dtContractEndDate);
+    request.input('sContractSupervisor', sql.NVarChar(255), sContractSupervisor);
+    request.input('iCreatedBy', sql.Int, iCreatedBy);
+
+    const query = `USE ERP;
+    INSERT INTO [tblCoOperateData]
+      ([sCompanyName], [sCompanyDepartment], [sEmployeeName], [sAdd1], [sAdd2],
+      [sCity], [sState], [sPinCode], [sCompanyContactNumber], [sCompanyEmailId], [sCompanyType],
+      [sGSTNumber], [dtContractStartDate], [dtContractEndDate], [sContractSupervisor], [iCreatedBy], [dtCreateDate])
+      VALUES
+      (@sCompanyName, @sCompanyDepartment, @sEmployeeName, @sAdd1, @sAdd2, @sCity,
+      @sState, @sPinCode, @sCompanyContactNumber, @sCompanyEmailId, @sCompanyType, @sGSTNumber,
+      @dtContractStartDate, @dtContractEndDate, @sContractSupervisor, @iCreatedBy, GETDATE())`;
+
+    const result = await request.query(query);
+
+    res.json({ message: "Inserted Successfully" });
+  } catch (err) {
+    console.error('Error executing SQL query:', err);
+    res.status(500).json({ error: 'Error executing SQL query.' });
+  }
+});
+
+
+//insert contractor
+
+
+app.post('/insertContractorDetails', async (req, res) => {
+  const {
+    sCompanyName, sFounderName, sFounderContactNumber, sCompanyContactNumber,
+    sAdd1, sAdd2, sCity, sState, sPinCode, sGSTNumber, sSupervisorName,
+    sSupervisorContactNumber, sWorkerName, sWorkerContactNumber, sAadhaarNumber,
+    dtStartDate, dtEndDate, iContractPrice, sContractDetails, iCreateBy
+  } = req.body;
+
+  try {
+    const request = new sql.Request();
+
+    request.input('sCompanyName', sql.NVarChar, sCompanyName);
+    request.input('sFounderName', sql.NVarChar, sFounderName);
+    request.input('sFounderContactNumber', sql.NVarChar, sFounderContactNumber);
+    request.input('sCompanyContactNumber', sql.NVarChar, sCompanyContactNumber);
+    request.input('sAdd1', sql.NVarChar, sAdd1);
+    request.input('sAdd2', sql.NVarChar, sAdd2);
+    request.input('sCity', sql.NVarChar, sCity);
+    request.input('sState', sql.NVarChar, sState);
+    request.input('sPinCode', sql.NVarChar, sPinCode);
+    request.input('sGSTNumber', sql.NVarChar, sGSTNumber);
+    request.input('sSupervisorName', sql.NVarChar, sSupervisorName);
+    request.input('sSupervisorContactNumber', sql.NVarChar, sSupervisorContactNumber);
+    request.input('sWorkerName', sql.NVarChar, sWorkerName);
+    request.input('sWorkerContactNumber', sql.NVarChar, sWorkerContactNumber);
+    request.input('sAadhaarNumber', sql.NVarChar, sAadhaarNumber);
+    request.input('dtStartDate', sql.DATE, dtStartDate);
+    request.input('dtEndDate', sql.DATE, dtEndDate);
+    request.input('iContractPrice', sql.INT, iContractPrice);
+    request.input('sContractDetails', sql.NVarChar, sContractDetails);
+    request.input('dtCreateDate', sql.DATETIME, new Date()); // Using GETDATE() to set the current date and time
+    request.input('iCreateBy', sql.INT, iCreateBy);
+
+    const query = `
+    USE ERP;
+      INSERT INTO [tblContractorDetails]
+      (
+        [sCompanyName], [sFounderName], [sFounderContactNumber], [sCompanyContactNumber],
+        [sAdd1], [sAdd2], [sCity], [sState], [sPinCode], [sGSTNumber],
+        [sSupervisorName], [sSupervisorContactNumber], [sWorkerName], [sWorkerContactNumber],
+        [sAadhaarNumber], [dtStartDate], [dtEndDate], [iContractPrice], [sContractDetails],
+        [dtCreateDate], [iCreateBy]
+      )
+      VALUES
+      (
+        @sCompanyName, @sFounderName, @sFounderContactNumber, @sCompanyContactNumber,
+        @sAdd1, @sAdd2, @sCity, @sState, @sPinCode, @sGSTNumber,
+        @sSupervisorName, @sSupervisorContactNumber, @sWorkerName, @sWorkerContactNumber,
+        @sAadhaarNumber, @dtStartDate, @dtEndDate, @iContractPrice, @sContractDetails,
+        @dtCreateDate, @iCreateBy
+      )
+    `;
+
+    const result = await request.query(query);
+
+    res.json({ message: "Inserted Successfully" });
+  } catch (err) {
+    console.error('Error executing SQL query:', err);
+    res.status(500).json({ error: 'Error executing SQL query.' });
+  }
+});
 
 const server = http.createServer(app);
 
