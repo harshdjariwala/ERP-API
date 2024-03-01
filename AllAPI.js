@@ -1285,6 +1285,7 @@ app.post('/insertInternData',verifyToken, async (req, res) => {
     sFirstName,
     sMiddleName,
     sLastName,
+    dtDOB,
     sGender,
     sMaritalStatus,
     sAdd1,
@@ -1303,6 +1304,9 @@ app.post('/insertInternData',verifyToken, async (req, res) => {
     sManagedBy,
     sDepartmentName,
     iCTC,
+    sHighestQualification,
+    sUniversityName,
+    dtGraduationDate,
     iCreatedBy,
     dtCreateDate,
   } = req.body;
@@ -1313,6 +1317,7 @@ app.post('/insertInternData',verifyToken, async (req, res) => {
     request.input('sFirstName', sql.NVarChar, sFirstName);
     request.input('sMiddleName', sql.NVarChar, sMiddleName);
     request.input('sLastName', sql.NVarChar, sLastName);
+    request.input('dtDOB', sql.NVarChar, dtDOB);
     request.input('sGender', sql.NVarChar, sGender);
     request.input('sMaritalStatus', sql.NVarChar, sMaritalStatus);
     request.input('sAdd1', sql.NVarChar, sAdd1);
@@ -1331,6 +1336,9 @@ app.post('/insertInternData',verifyToken, async (req, res) => {
     request.input('sManagedBy', sql.NVarChar, sManagedBy);
     request.input('sDepartmentName', sql.NVarChar, sDepartmentName);
     request.input('iCTC', sql.Int, iCTC);
+    request.input('sHighestQualification', sql.VarChar, sHighestQualification);
+    request.input('sUniversityName', sql.VarChar, sUniversityName);
+    request.input('dtGraduationDate', sql.Date, sUniversityName);
     request.input('iCreatedBy', sql.Int, iCreatedBy);
     request.input('dtCreateDate', sql.DateTime, dtCreateDate);
 
@@ -1341,6 +1349,7 @@ app.post('/insertInternData',verifyToken, async (req, res) => {
         [sFirstName],
         [sMiddleName],
         [sLastName],
+        [dtDOB],
         [sGender],
         [sMaritalStatus],
         [sAdd1],
@@ -1359,6 +1368,9 @@ app.post('/insertInternData',verifyToken, async (req, res) => {
         [sManagedBy],
         [sDepartmentName],
         [iCTC],
+       [sHighestQualification],
+        [sUniversityName],
+        [dtGraduationDate],
         [iCreatedBy],
         [dtCreateDate]
       )
@@ -1367,6 +1379,7 @@ app.post('/insertInternData',verifyToken, async (req, res) => {
         @sFirstName,
         @sMiddleName,
         @sLastName,
+        @dtDOB,
         @sGender,
         @sMaritalStatus,
         @sAdd1,
@@ -1385,6 +1398,9 @@ app.post('/insertInternData',verifyToken, async (req, res) => {
         @sManagedBy,
         @sDepartmentName,
         @iCTC,
+        @sHighestQualification,
+        @sUniversityName,
+        @dtGraduationDate,
         @iCreatedBy,
         @dtCreateDate
       )`;
