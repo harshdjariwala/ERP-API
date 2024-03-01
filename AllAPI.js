@@ -1338,7 +1338,7 @@ app.post('/insertInternData',verifyToken, async (req, res) => {
     request.input('iCTC', sql.Int, iCTC);
     request.input('sHighestQualification', sql.VarChar, sHighestQualification);
     request.input('sUniversityName', sql.VarChar, sUniversityName);
-    request.input('dtGraduationDate', sql.Date, sUniversityName);
+    request.input('dtGraduationDate', sql.Date, dtGraduationDate);
     request.input('iCreatedBy', sql.Int, iCreatedBy);
     request.input('dtCreateDate', sql.DateTime, dtCreateDate);
 
