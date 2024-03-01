@@ -1258,7 +1258,7 @@ app.post('/insertPermanentEmployeeData',verifyToken, async (req, res) => {
         [sFirstName], [sMiddleName], [sLastName],[dtDOB], [sGender], [sMaritalStatus], 
         [sAdd1], [sAdd2], [sCity], [sState], [sPinCode], [sPhoneNumber], [sEmailId], 
         [sAadhaarNumber], [sPanNumber], [dtEmploymentStartDate], [dtEmployementEndDate], 
-        [sJobTitle], [sManagedBy], [sDepartmentName], [iEmploymentType], [iCTC], [sHighestQualification],[sUniversityName],[dtGraduationDate]
+        [sJobTitle], [sManagedBy], [sDepartmentName], [iEmploymentType], [iCTC], [sHighestQualification],[sUniversityName],[dtGraduationDate],
         [iCreatedBy], [dtCreateDate]
       )
       VALUES
