@@ -1214,10 +1214,10 @@ app.get('/getCoOperate',verifyToken, async (req, res) => {
 
 app.post('/insertPermanentEmployeeData',verifyToken, async (req, res) => {
   const {
-    sFirstName, sMiddleName, sLastName, sGender, sMaritalStatus, sAdd1, sAdd2,
+    sFirstName, sMiddleName, sLastName, dtDOB, sGender, sMaritalStatus, sAdd1, sAdd2,
     sCity, sState, sPinCode, sPhoneNumber, sEmailId, sAadhaarNumber, sPanNumber,
     dtEmploymentStartDate, dtEmployementEndDate, sJobTitle, sManagedBy, sDepartmentName,
-    iEmploymentType, iCTC, iCreatedBy
+    iEmploymentType, iCTC,sHighestQualification, sUniversityName, dtGraduationDate, iCreatedBy
   } = req.body;
 
   try {
@@ -1226,6 +1226,7 @@ app.post('/insertPermanentEmployeeData',verifyToken, async (req, res) => {
     request.input('sFirstName', sql.NVarChar, sFirstName);
     request.input('sMiddleName', sql.NVarChar, sMiddleName);
     request.input('sLastName', sql.NVarChar, sLastName);
+    request.input('dtDOB', sql.Date, dtDOB);
     request.input('sGender', sql.NVarChar, sGender);
     request.input('sMaritalStatus', sql.NVarChar, sMaritalStatus);
     request.input('sAdd1', sql.NVarChar, sAdd1);
@@ -1244,6 +1245,9 @@ app.post('/insertPermanentEmployeeData',verifyToken, async (req, res) => {
     request.input('sDepartmentName', sql.NVarChar, sDepartmentName);
     request.input('iEmploymentType', sql.INT, iEmploymentType);
     request.input('iCTC', sql.INT, iCTC);
+    request.input('sHighestQualification', sql.VARCHAR, sHighestQualification);
+    request.input('sUniversityName', sql.VARCHAR, sUniversityName);
+    request.input('dtGraduationDate', sql.VARCHAR, dtGraduationDate);
     request.input('iCreatedBy', sql.INT, iCreatedBy);
    
 
@@ -1251,18 +1255,18 @@ app.post('/insertPermanentEmployeeData',verifyToken, async (req, res) => {
     USE ERP;
       INSERT INTO [ERP].[dbo].[tblPermanentEmployeeData] 
       (
-        [sFirstName], [sMiddleName], [sLastName], [sGender], [sMaritalStatus], 
+        [sFirstName], [sMiddleName], [sLastName],[dtDOB], [sGender], [sMaritalStatus], 
         [sAdd1], [sAdd2], [sCity], [sState], [sPinCode], [sPhoneNumber], [sEmailId], 
         [sAadhaarNumber], [sPanNumber], [dtEmploymentStartDate], [dtEmployementEndDate], 
-        [sJobTitle], [sManagedBy], [sDepartmentName], [iEmploymentType], [iCTC], 
+        [sJobTitle], [sManagedBy], [sDepartmentName], [iEmploymentType], [iCTC], [sHighestQualification],[sUniversityName],[dtGraduationDate]
         [iCreatedBy], [dtCreateDate]
       )
       VALUES
       (
-        @sFirstName, @sMiddleName, @sLastName, @sGender, @sMaritalStatus, 
+        @sFirstName, @sMiddleName, @sLastName, @dtDOB, @sGender, @sMaritalStatus, 
         @sAdd1, @sAdd2, @sCity, @sState, @sPinCode, @sPhoneNumber, @sEmailId, 
         @sAadhaarNumber, @sPanNumber, @dtEmploymentStartDate, @dtEmployementEndDate, 
-        @sJobTitle, @sManagedBy, @sDepartmentName, @iEmploymentType, @iCTC, 
+        @sJobTitle, @sManagedBy, @sDepartmentName, @iEmploymentType, @iCTC, @sHighestQualification, @sUniversityName, @dtGraduationDate,
         @iCreatedBy, GETDATE()
       )
     `;
