@@ -1222,8 +1222,7 @@ app.post('/insertPermanentEmployeeData',verifyToken, async (req, res) => {
   const {
     sFirstName, sMiddleName, sLastName, dtDOB, sGender, sMaritalStatus, sAdd1, sAdd2,
     sCity, sState, sPinCode, sPhoneNumber, sEmailId, sAadhaarNumber, sPanNumber,
-    dtEmploymentStartDate, dtEmployementEndDate, sJobTitle, sManagedBy, sDepartmentName,
-    iEmploymentType, iCTC,sHighestQualification, sUniversityName, dtGraduationDate, iCreatedBy
+    dtEmploymentStartDate, dtEmployementEndDate, sJobTitle, sManagedBy, sDepartmentName, iCTC,sHighestQualification, sUniversityName, dtGraduationDate, iCreatedBy
   } = req.body;
 
   try {
@@ -1249,7 +1248,7 @@ app.post('/insertPermanentEmployeeData',verifyToken, async (req, res) => {
     request.input('sJobTitle', sql.NVarChar, sJobTitle);
     request.input('sManagedBy', sql.NVarChar, sManagedBy);
     request.input('sDepartmentName', sql.NVarChar, sDepartmentName);
-    request.input('iEmploymentType', sql.INT, iEmploymentType);
+    // request.input('iEmploymentType', sql.INT, iEmploymentType);
     request.input('iCTC', sql.INT, iCTC);
     request.input('sHighestQualification', sql.VARCHAR, sHighestQualification);
     request.input('sUniversityName', sql.VARCHAR, sUniversityName);
@@ -1264,7 +1263,7 @@ app.post('/insertPermanentEmployeeData',verifyToken, async (req, res) => {
         [sFirstName], [sMiddleName], [sLastName],[dtDOB], [sGender], [sMaritalStatus], 
         [sAdd1], [sAdd2], [sCity], [sState], [sPinCode], [sPhoneNumber], [sEmailId], 
         [sAadhaarNumber], [sPanNumber], [dtEmploymentStartDate], [dtEmployementEndDate], 
-        [sJobTitle], [sManagedBy], [sDepartmentName], [iEmploymentType], [iCTC], [sHighestQualification],[sUniversityName],[dtGraduationDate],
+        [sJobTitle], [sManagedBy], [sDepartmentName], [iCTC], [sHighestQualification],[sUniversityName],[dtGraduationDate],
         [iCreatedBy], [dtCreateDate], [sEmploymentType]
       )
       VALUES
@@ -1272,7 +1271,7 @@ app.post('/insertPermanentEmployeeData',verifyToken, async (req, res) => {
         @sFirstName, @sMiddleName, @sLastName, @dtDOB, @sGender, @sMaritalStatus, 
         @sAdd1, @sAdd2, @sCity, @sState, @sPinCode, @sPhoneNumber, @sEmailId, 
         @sAadhaarNumber, @sPanNumber, @dtEmploymentStartDate, @dtEmployementEndDate, 
-        @sJobTitle, @sManagedBy, @sDepartmentName, @iEmploymentType, @iCTC, @sHighestQualification, @sUniversityName, @dtGraduationDate,
+        @sJobTitle, @sManagedBy, @sDepartmentName, @iCTC, @sHighestQualification, @sUniversityName, @dtGraduationDate,
         @iCreatedBy, GETDATE(), 'Permanent'
       )
     `;
