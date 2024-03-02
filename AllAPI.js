@@ -1259,7 +1259,7 @@ app.post('/insertPermanentEmployeeData',verifyToken, async (req, res) => {
         [sAdd1], [sAdd2], [sCity], [sState], [sPinCode], [sPhoneNumber], [sEmailId], 
         [sAadhaarNumber], [sPanNumber], [dtEmploymentStartDate], [dtEmployementEndDate], 
         [sJobTitle], [sManagedBy], [sDepartmentName], [iEmploymentType], [iCTC], [sHighestQualification],[sUniversityName],[dtGraduationDate],
-        [iCreatedBy], [dtCreateDate]
+        [iCreatedBy], [dtCreateDate], [sEmploymentType]
       )
       VALUES
       (
@@ -1267,7 +1267,7 @@ app.post('/insertPermanentEmployeeData',verifyToken, async (req, res) => {
         @sAdd1, @sAdd2, @sCity, @sState, @sPinCode, @sPhoneNumber, @sEmailId, 
         @sAadhaarNumber, @sPanNumber, @dtEmploymentStartDate, @dtEmployementEndDate, 
         @sJobTitle, @sManagedBy, @sDepartmentName, @iEmploymentType, @iCTC, @sHighestQualification, @sUniversityName, @dtGraduationDate,
-        @iCreatedBy, GETDATE()
+        @iCreatedBy, GETDATE(), 'Permanent'
       )
     `;
 
@@ -1372,7 +1372,8 @@ app.post('/insertInternData',verifyToken, async (req, res) => {
         [sUniversityName],
         [dtGraduationDate],
         [iCreatedBy],
-        [dtCreateDate]
+        [dtCreateDate],
+        [sEmploymentType]
       )
       VALUES
       (
@@ -1402,7 +1403,8 @@ app.post('/insertInternData',verifyToken, async (req, res) => {
         @sUniversityName,
         @dtGraduationDate,
         @iCreatedBy,
-        @dtCreateDate
+        @dtCreateDate,
+        'Intern'
       )`;
 
     await request.query(query);
@@ -1454,13 +1456,13 @@ app.post('/insertFreeLanceDetails',verifyToken, async (req, res) => {
       (
         [sFirstName], [sMiddleName], [sLastName], [sGender], [sMaritalStatus], [sAdd1], [sAdd2], [sCity],
         [sState], [sPinCode], [sPhoneNumber], [sEmailId], [sAadhaarNumber], [sPanNumber], [dtContractStartDate],
-        [dtContractEndDate], [sFreelanceTitle], [sManagedBy], [sDepartmentName], [iContractAmt], [iCreatedBy], [dtCreateDate]
+        [dtContractEndDate], [sFreelanceTitle], [sManagedBy], [sDepartmentName], [iContractAmt], [iCreatedBy], [dtCreateDate], [sEmploymentType]
       )
       VALUES
       (
         @sFirstName, @sMiddleName, @sLastName, @sGender, @sMaritalStatus, @sAdd1, @sAdd2, @sCity, @sState, @sPinCode,
         @sPhoneNumber, @sEmailId, @sAadhaarNumber, @sPanNumber, @dtContractStartDate, @dtContractEndDate, @sFreelanceTitle,
-        @sManagedBy, @sDepartmentName, @iContractAmt, @iCreatedBy, GETDATE()
+        @sManagedBy, @sDepartmentName, @iContractAmt, @iCreatedBy, GETDATE(), 'Freelance'
       )`;
 
     const result = await request.query(query);
@@ -1517,11 +1519,11 @@ app.post('/insertCoOperateData',verifyToken, async (req, res) => {
     INSERT INTO [tblCoOperateData]
       ([sCompanyName], [sCompanyDepartment], [sEmployeeName], [sAdd1], [sAdd2],
       [sCity], [sState], [sPinCode], [sCompanyContactNumber], [sCompanyEmailId], [sCompanyType],
-      [sGSTNumber], [dtContractStartDate], [dtContractEndDate], [sContractSupervisor], [iCreatedBy], [dtCreateDate])
+      [sGSTNumber], [dtContractStartDate], [dtContractEndDate], [sContractSupervisor], [iCreatedBy], [dtCreateDate],[sEmploymentType])
       VALUES
       (@sCompanyName, @sCompanyDepartment, @sEmployeeName, @sAdd1, @sAdd2, @sCity,
       @sState, @sPinCode, @sCompanyContactNumber, @sCompanyEmailId, @sCompanyType, @sGSTNumber,
-      @dtContractStartDate, @dtContractEndDate, @sContractSupervisor, @iCreatedBy, GETDATE())`;
+      @dtContractStartDate, @dtContractEndDate, @sContractSupervisor, @iCreatedBy, GETDATE(), 'CoOperate')`;
 
     const result = await request.query(query);
 
@@ -1577,7 +1579,7 @@ app.post('/insertContractorDetails', async (req, res) => {
         [sAdd1], [sAdd2], [sCity], [sState], [sPinCode], [sGSTNumber],
         [sSupervisorName], [sSupervisorContactNumber], [sWorkerName], [sWorkerContactNumber],
         [sAadhaarNumber], [dtStartDate], [dtEndDate], [iContractPrice], [sContractDetails],
-        [dtCreateDate], [iCreateBy]
+        [dtCreateDate], [iCreateBy], [sEmploymentType]
       )
       VALUES
       (
@@ -1585,7 +1587,7 @@ app.post('/insertContractorDetails', async (req, res) => {
         @sAdd1, @sAdd2, @sCity, @sState, @sPinCode, @sGSTNumber,
         @sSupervisorName, @sSupervisorContactNumber, @sWorkerName, @sWorkerContactNumber,
         @sAadhaarNumber, @dtStartDate, @dtEndDate, @iContractPrice, @sContractDetails,
-        @dtCreateDate, @iCreateBy
+        @dtCreateDate, @iCreateBy, 'Contractor'
       )
     `;
 
