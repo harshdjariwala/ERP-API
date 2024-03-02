@@ -416,18 +416,24 @@ app.get('/getAllEmployeeAttendance',verifyToken, async (req, res) => {
   try {
     const request = new sql.Request();
     const result = await request.query(`
-      USE ERP;
-      SELECT 
-        ed.iId AS employeeId,
-        CONCAT(ed.sFirstName, ' ', ed.sLastName) AS FullName,
-        MAX(CASE WHEN ea.bCheckStatus = 0 THEN ea.dtCreateDate END) AS checkIn,
-        MAX(CASE WHEN ea.bCheckStatus = 1 THEN ea.dtCreateDate END) AS checkOut
-      FROM 
-        tblEmployeeData ed
-      LEFT JOIN 
-        tblEmployeeAttendence ea ON ed.iId = ea.iEmployeeId
-      GROUP BY 
-        ed.iId, CONCAT(ed.sFirstName, ' ', ed.sLastName);
+    USE ERP;
+    SELECT 
+    ed.iEmployeeId AS employeeId,
+    CONCAT(ed.sFirstName, ' ', ed.sLastName) AS FullName,
+    ed.sEmploymentType AS EmploymentStatus,
+    MAX(CASE WHEN ea.bCheckStatus = 0 THEN ea.dtCreateDate END) AS checkIn,
+    MAX(CASE WHEN ea.bCheckStatus = 1 THEN ea.dtCreateDate END) AS checkOut
+FROM 
+    (
+        SELECT iEmployeeId, sFirstName, sLastName, sEmploymentType FROM tblPermanentEmployeeData
+        UNION ALL
+        SELECT iEmployeeId, sFirstName, sLastName, sEmploymentType FROM tblInternData
+    ) ed
+LEFT JOIN 
+    tblEmployeeAttendence ea ON ed.iEmployeeId = ea.iEmployeeId
+GROUP BY 
+    ed.iEmployeeId, CONCAT(ed.sFirstName, ' ', ed.sLastName), ed.sEmploymentType;
+
     `);
 
     res.json(result.recordset);
