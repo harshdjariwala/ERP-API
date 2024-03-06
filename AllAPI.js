@@ -1258,7 +1258,7 @@ app.post('/insertPermanentEmployeeData',verifyToken, async (req, res) => {
 
     const query = `
     USE ERP;
-      INSERT INTO [ERP].[dbo].[tblPermanentEmployeeData] 
+      INSERT INTO [ERP].[dbo].[tblPermanentEmployeeDataTemp] 
       (
         [sFirstName], [sMiddleName], [sLastName],[dtDOB], [sGender], [sMaritalStatus], 
         [sAdd1], [sAdd2], [sCity], [sState], [sPinCode], [sPhoneNumber], [sEmailId], 
@@ -1349,7 +1349,7 @@ app.post('/insertInternData',verifyToken, async (req, res) => {
 
     const query = `
     USE ERP;
-      INSERT INTO [tblInternData]
+      INSERT INTO [tblInternDataTemp]
       (
         [sFirstName],
         [sMiddleName],
@@ -1457,7 +1457,7 @@ app.post('/insertFreeLanceDetails',verifyToken, async (req, res) => {
 
     const query = `
     USE ERP;
-      INSERT INTO [tblFreeLanceDetails]
+      INSERT INTO [tblFreeLanceDetailsTemp]
       (
         [sFirstName], [sMiddleName], [sLastName], [sGender], [sMaritalStatus], [sAdd1], [sAdd2], [sCity],
         [sState], [sPinCode], [sPhoneNumber], [sEmailId], [sAadhaarNumber], [sPanNumber], [dtContractStartDate],
@@ -1521,7 +1521,7 @@ app.post('/insertCoOperateData',verifyToken, async (req, res) => {
     request.input('iCreatedBy', sql.Int, iCreatedBy);
 
     const query = `USE ERP;
-    INSERT INTO [tblCoOperateData]
+    INSERT INTO [tblCoOperateDataTemp]
       ([sCompanyName], [sCompanyDepartment], [sEmployeeName], [sAdd1], [sAdd2],
       [sCity], [sState], [sPinCode], [sCompanyContactNumber], [sCompanyEmailId], [sCompanyType],
       [sGSTNumber], [dtContractStartDate], [dtContractEndDate], [sContractSupervisor], [iCreatedBy], [dtCreateDate],[sEmploymentType])
@@ -1578,7 +1578,7 @@ app.post('/insertContractorDetails', async (req, res) => {
 
     const query = `
     USE ERP;
-      INSERT INTO [tblContractorDetails]
+      INSERT INTO [tblContractorDetailsTemp]
       (
         [sCompanyName], [sFounderName], [sFounderContactNumber], [sCompanyContactNumber],
         [sAdd1], [sAdd2], [sCity], [sState], [sPinCode], [sGSTNumber],
