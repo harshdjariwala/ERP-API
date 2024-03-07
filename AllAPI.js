@@ -497,10 +497,10 @@ app.get('/checkinStatus', async (req, res) => {
           Co.*
         FROM
           tblPermanentEmployeeData P
-        LEFT JOIN tblInternData I ON P.iId = I.PermanentEmployeeId
-        LEFT JOIN tblFreeLanceDetails F ON P.iId = F.PermanentEmployeeId
-        LEFT JOIN tblContractorDetails C ON P.iId = C.PermanentEmployeeId
-        LEFT JOIN tblCoOperateData Co ON P.iId = Co.PermanentEmployeeId
+        LEFT JOIN tblInternData I ON P.iEmployeeId = I.PermanentEmployeeId
+        LEFT JOIN tblFreeLanceDetails F ON P.iEmployeeId = F.PermanentEmployeeId
+        LEFT JOIN tblContractorDetails C ON P.iEmployeeId = C.PermanentEmployeeId
+        LEFT JOIN tblCoOperateData Co ON P.iEmployeeId = Co.PermanentEmployeeId
         WHERE P.bStatus = 1`;
   
       const result = await request.query(query);
