@@ -483,16 +483,25 @@ app.get('/checkinStatus', async (req, res) => {
 
 
   //Get All employee
-  app.get('/getAllEmployeeData',verifyToken, async (req, res) => {
-  
-
-
+  app.get('/getAllEmployeeData', verifyToken, async (req, res) => {
     try {
       const request = new sql.Request();
   
       const query = `
-      USE ERP; 
-      SELECT iId, sFirstName, sLastName FROM tblEmployeeData`;
+        USE ERP; 
+        SELECT
+          P.*,
+          I.*,
+          F.*,
+          C.*,
+          Co.*
+        FROM
+          tblPermanentEmployeeData P
+        LEFT JOIN tblInternData I ON P.iId = I.PermanentEmployeeId
+        LEFT JOIN tblFreeLanceDetails F ON P.iId = F.PermanentEmployeeId
+        LEFT JOIN tblContractorDetails C ON P.iId = C.PermanentEmployeeId
+        LEFT JOIN tblCoOperateData Co ON P.iId = Co.PermanentEmployeeId
+        WHERE P.bStatus = 1`;
   
       const result = await request.query(query);
   
@@ -502,6 +511,7 @@ app.get('/checkinStatus', async (req, res) => {
       res.status(500).json({ error: 'Error executing SQL query.' });
     }
   });
+  
 
   app.post('/loginAuth', async (req, res) => {
     const { sUserCode, sPassword } = req.body;
