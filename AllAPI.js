@@ -105,144 +105,6 @@ app.get('/getEmployeeData',verifyToken, async (req, res) => {
     }
   });
 
-//Update Employee Data
-app.put('/updateEmployeeData',verifyToken, async (req, res) => {
-  const {
-    iId, sFirstName, sMiddleName, sLastName, sGender, dtDob, sAdd1, sAdd2, sAdd3, sCity, sState,
-    sPinCode, sAadhaarNumber, sPanCard, dtJoiningDate, sContactNumber, iCreatedBy,
-    sGaurantor1, iEmployeeType
-  } = req.body;
-
-  if (!iId) {
-    return res.status(400).json({ error: 'Please provide valid parameters.' });
-  }
-
-  try {
-    const request = new sql.Request();
-
-    // Build the dynamic SET clause based on provided parameters
-    const setClause = Object.entries(req.body)
-      .filter(([key, value]) => key !== 'iId' && value !== undefined)
-      .map(([key]) => `[${key}] = @${key}`)
-      .join(', ');
-
-    const query = `
-      UPDATE [ERP].[dbo].[tblEmployeeData]
-      SET ${setClause}
-      WHERE [iId] = @iId;
-    `;
-
-    // Log the query and parameters for debugging
-    //console.log('SQL Query:', query);
-    //console.log('Parameters:', req.body);
-
-    // Set the parameters in the request
-    Object.entries(req.body).forEach(([key, value]) => {
-      if (key !== 'iId') {
-        request.input(key, sql.VarChar, value);
-      }
-    });
-
-    // Add the iId parameter separately
-    request.input('iId', sql.Int, iId);
-
-    const result = await request.query(query);
-
-    res.json({ message: "Updated Successfully" });
-  } catch (err) {
-    console.error('Error executing SQL query:', err);
-    res.status(500).json({ error: 'Error executing SQL query.' });
-  }
-});
-// Insert Employee Data Update Log
-app.post('/insertEmployeeUpdateLog',verifyToken, async (req, res) => {
-    const {
-      iId, iUpdatedBy
-    } = req.body;
-  
-    if (!iId || !iUpdatedBy) {
-      return res.status(400).json({ error: 'Please provide valid parameters.' });
-    }
-  
-    try {
-      const request = new sql.Request();
-  
-      request.input('iId', sql.Int, iId);
-      request.input('iUpdatedBy', sql.Int, iUpdatedBy);
-      
-  
-    const query = `INSERT INTO [ERP].[dbo].[tblEmployeeDataUpdateLog]
-    ([iId], [sFirstName], [sMiddleName], [sLastName], [sGender], [dtDob], [sAdd1], [sAdd2], [sAdd3], [sCity], [sState],
-    [sPinCode], [sAadhaarNumber], [sPanCard], [dtJoiningDate], [sContactNumber], [dtUpdateDate], [iUpdatedBy],
-    [sGaurantor1], [iEmployeeType])
-    SELECT
-    [iId], [sFirstName], [sMiddleName], [sLastName], [sGender], [dtDob], [sAdd1], [sAdd2], [sAdd3], [sCity], [sState],
-    [sPinCode], [sAadhaarNumber], [sPanCard], [dtJoiningDate], [sContactNumber], GETDATE(), @iUpdatedBy,
-    [sGaurantor1], [iEmployeeType]
-    FROM [ERP].[dbo].[tblEmployeeData]
-    WHERE [iId] = @iId `;
-  
-      const result = await request.query(query);
-  
-      res.json({ message: "Updated Successfully" });
-    } catch (err) {
-      console.error('Error executing SQL query:', err);
-      res.status(500).json({ error: 'Error executing SQL query.' });
-    }
-  });
-
-// Insert Employee Data
-app.post('/insertEmployeeData',verifyToken, async (req, res) => {
-    const {
-      sFirstName, sMiddleName, sLastName, sGender, dtDob, sAdd1, sAdd2, sAdd3, sCity, sState,
-      sPinCode, sAadhaarNumber, sPanCard, dtJoiningDate, sContactNumber, iCreatedBy,
-      sGaurantor1, iEmployeeType
-    } = req.body;
-  
-    if (!sFirstName || !sLastName || !sGender || !dtDob || !sAdd1 || !sCity || !sState || !sPinCode || !sAadhaarNumber || !sPanCard || !sContactNumber || !iCreatedBy || !sGaurantor1 || !iEmployeeType) {
-      return res.status(400).json({ error: 'Please provide valid parameters.' });
-    }
-  
-    try {
-      const request = new sql.Request();
-  
-      request.input('sFirstName', sql.VarChar, sFirstName);
-      request.input('sMiddleName', sql.VarChar, sMiddleName);
-      request.input('sLastName', sql.VarChar, sLastName);
-      request.input('sGender', sql.Char, sGender);
-      request.input('dtDob', sql.DateTime, dtDob);
-      request.input('sAdd1', sql.VarChar, sAdd1);
-      request.input('sAdd2', sql.VarChar, sAdd2);
-      request.input('sAdd3', sql.VarChar, sAdd3);
-      request.input('sCity', sql.VarChar, sCity);
-      request.input('sState', sql.VarChar, sState);
-      request.input('sPinCode', sql.VarChar, sPinCode);
-      request.input('sAadhaarNumber', sql.VarChar, sAadhaarNumber);
-      request.input('sPanCard', sql.VarChar, sPanCard);
-      request.input('dtJoiningDate', sql.DateTime, dtJoiningDate);
-      request.input('sContactNumber', sql.VarChar, sContactNumber);
-      //request.input('dtCreateDate', sql.DateTime, dtCreateDate);
-      request.input('iCreatedBy', sql.Int, iCreatedBy);
-      request.input('sGaurantor1', sql.VarChar, sGaurantor1);
-      request.input('iEmployeeType', sql.Int, iEmployeeType);
-  
-      const query = `INSERT INTO [ERP].[dbo].[tblEmployeeData]
-        ([sFirstName], [sMiddleName], [sLastName], [sGender], [dtDob], [sAdd1], [sAdd2], [sAdd3], [sCity], [sState],
-        [sPinCode], [sAadhaarNumber], [sPanCard], [dtJoiningDate], [sContactNumber], [dtCreateDate], [iCreatedBy],
-        [sGaurantor1], [iEmployeeType])
-        VALUES
-        (@sFirstName, @sMiddleName, @sLastName, @sGender, @dtDob, @sAdd1, @sAdd2, @sAdd3, @sCity, @sState,
-        @sPinCode, @sAadhaarNumber, @sPanCard, @dtJoiningDate, @sContactNumber, GETDATE(), @iCreatedBy,
-        @sGaurantor1, @iEmployeeType)`;
-  
-      const result = await request.query(query);
-  
-      res.json({ message: "Updated Successfully" });
-    } catch (err) {
-      console.error('Error executing SQL query:', err);
-      res.status(500).json({ error: 'Error executing SQL query.' });
-    }
-  });
 
   
 // Checkin Employee Attendence
@@ -1314,7 +1176,7 @@ app.post('/insertPermanentEmployeeData',verifyToken, async (req, res) => {
 
     const query = `
     USE ERP;
-      INSERT INTO [ERP].[dbo].[tblPermanentEmployeeDataTemp] 
+      INSERT INTO [ERP].[dbo].[tblPermanentEmployeeData] 
       (
         [sFirstName], [sMiddleName], [sLastName],[dtDOB], [sGender], [sMaritalStatus], 
         [sAdd1], [sAdd2], [sCity], [sState], [sPinCode], [sPhoneNumber], [sEmailId], 
@@ -1405,7 +1267,7 @@ app.post('/insertInternData',verifyToken, async (req, res) => {
 
     const query = `
     USE ERP;
-      INSERT INTO [tblInternDataTemp]
+      INSERT INTO [tblInternData]
       (
         [sFirstName],
         [sMiddleName],
@@ -1513,7 +1375,7 @@ app.post('/insertFreeLanceDetails',verifyToken, async (req, res) => {
 
     const query = `
     USE ERP;
-      INSERT INTO [tblFreeLanceDetailsTemp]
+      INSERT INTO [tblFreeLanceDetails]
       (
         [sFirstName], [sMiddleName], [sLastName], [sGender], [sMaritalStatus], [sAdd1], [sAdd2], [sCity],
         [sState], [sPinCode], [sPhoneNumber], [sEmailId], [sAadhaarNumber], [sPanNumber], [dtContractStartDate],
@@ -1577,7 +1439,7 @@ app.post('/insertCoOperateData',verifyToken, async (req, res) => {
     request.input('iCreatedBy', sql.Int, iCreatedBy);
 
     const query = `USE ERP;
-    INSERT INTO [tblCoOperateDataTemp]
+    INSERT INTO [tblCoOperateData]
       ([sCompanyName], [sCompanyDepartment], [sEmployeeName], [sAdd1], [sAdd2],
       [sCity], [sState], [sPinCode], [sCompanyContactNumber], [sCompanyEmailId], [sCompanyType],
       [sGSTNumber], [dtContractStartDate], [dtContractEndDate], [sContractSupervisor], [iCreatedBy], [dtCreateDate],[sEmploymentType])
@@ -1634,7 +1496,7 @@ app.post('/insertContractorDetails', async (req, res) => {
 
     const query = `
     USE ERP;
-      INSERT INTO [tblContractorDetailsTemp]
+      INSERT INTO [tblContractorDetails]
       (
         [sCompanyName], [sFounderName], [sFounderContactNumber], [sCompanyContactNumber],
         [sAdd1], [sAdd2], [sCity], [sState], [sPinCode], [sGSTNumber],
