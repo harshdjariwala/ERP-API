@@ -1104,6 +1104,23 @@ app.get('/getPermanentEmployee',verifyToken, async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+app.get('/getAllPermanentEmployee',verifyToken, async (req, res) => {
+  try {
+    const request = new sql.Request();
+    const result = await request.query(`
+    USE ERP;
+    SELECT * FROM tblPermanentEmployeeData;
+
+    `);
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error('Error executing SQL query:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 //get Intern Employee
 app.get('/getInternEmployee',verifyToken, async (req, res) => {
   const { iEmployeeId } = req.query; // Change this line to use req.query
@@ -1118,6 +1135,21 @@ app.get('/getInternEmployee',verifyToken, async (req, res) => {
         *
       FROM ERP.dbo.tblInternData
       WHERE iEmployeeId = @iEmployeeId  AND bStatus = 1;
+    `);
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error('Error executing SQL query:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.get('/getAllInternEmployee',verifyToken, async (req, res) => {
+  try {
+    const request = new sql.Request();
+    const result = await request.query(`
+    USE ERP;
+    SELECT * FROM tblInternData;
     `);
 
     res.json(result.recordset);
@@ -1150,6 +1182,21 @@ app.get('/getFreelanceDetails',verifyToken, async (req, res) => {
   }
 });
 
+app.get('/getAllFreelanceDetails',verifyToken, async (req, res) => {
+  try {
+    const request = new sql.Request();
+    const result = await request.query(`
+    USE ERP;
+    SELECT * FROM tblFreeLanceDetails;
+    `);
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error('Error executing SQL query:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 //get Contractor
 app.get('/getContractorDetails', verifyToken, async (req, res) => {
   const { iEmployeeId } = req.query; // Change this line to use req.query
@@ -1173,6 +1220,21 @@ app.get('/getContractorDetails', verifyToken, async (req, res) => {
   }
 });
 
+app.get('/getAllContractorDetails',verifyToken, async (req, res) => {
+  try {
+    const request = new sql.Request();
+    const result = await request.query(`
+    USE ERP;
+    SELECT * FROM tblContractorDetails;
+    `);
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error('Error executing SQL query:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 // get CoOperate
 app.get('/getCoOperate',verifyToken, async (req, res) => {
   const { iEmployeeId } = req.query; // Change this line to use req.query
@@ -1186,6 +1248,21 @@ app.get('/getCoOperate',verifyToken, async (req, res) => {
         *
       FROM ERP.dbo.tblCoOperateData
       WHERE iEmployeeId = @iEmployeeId  AND bStatus = 1;
+    `);
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error('Error executing SQL query:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.get('/getAllCoOperateDetails',verifyToken, async (req, res) => {
+  try {
+    const request = new sql.Request();
+    const result = await request.query(`
+    USE ERP;
+    SELECT * FROM tblCoOperateData;
     `);
 
     res.json(result.recordset);
