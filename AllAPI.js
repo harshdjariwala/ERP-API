@@ -1095,7 +1095,7 @@ app.get('/getPermanentEmployee',verifyToken, async (req, res) => {
       SELECT
         *
       FROM ERP.dbo.tblPermanentEmployeeData
-      WHERE iEmployeeId = @iEmployeeId AND bStatus = 1;
+      WHERE iEmployeeId = @iEmployeeId;
     `);
 
     res.json(result.recordset);
@@ -1110,7 +1110,7 @@ app.get('/getAllPermanentEmployee',verifyToken, async (req, res) => {
     const request = new sql.Request();
     const result = await request.query(`
     USE ERP;
-    SELECT * FROM tblPermanentEmployeeData;
+    SELECT * FROM tblPermanentEmployeeData WHERE bStatus = 1;
 
     `);
 
@@ -1134,7 +1134,7 @@ app.get('/getInternEmployee',verifyToken, async (req, res) => {
       SELECT
         *
       FROM ERP.dbo.tblInternData
-      WHERE iEmployeeId = @iEmployeeId  AND bStatus = 1;
+      WHERE iEmployeeId = @iEmployeeId;
     `);
 
     res.json(result.recordset);
@@ -1149,7 +1149,7 @@ app.get('/getAllInternEmployee',verifyToken, async (req, res) => {
     const request = new sql.Request();
     const result = await request.query(`
     USE ERP;
-    SELECT * FROM tblInternData;
+    SELECT * FROM tblInternData WHERE bStatus = 1;
     `);
 
     res.json(result.recordset);
@@ -1172,7 +1172,7 @@ app.get('/getFreelanceDetails',verifyToken, async (req, res) => {
       SELECT
         *
       FROM ERP.dbo.tblFreeLanceDetails
-      WHERE iEmployeeId = @iEmployeeId  AND bStatus = 1;
+      WHERE iEmployeeId = @iEmployeeId;
     `);
 
     res.json(result.recordset);
@@ -1187,7 +1187,7 @@ app.get('/getAllFreelanceDetails',verifyToken, async (req, res) => {
     const request = new sql.Request();
     const result = await request.query(`
     USE ERP;
-    SELECT * FROM tblFreeLanceDetails;
+    SELECT * FROM tblFreeLanceDetails WHERE bStatus = 1;
     `);
 
     res.json(result.recordset);
@@ -1210,7 +1210,7 @@ app.get('/getContractorDetails', verifyToken, async (req, res) => {
       SELECT
         *
       FROM ERP.dbo.tblContractorDetails
-      WHERE iEmployeeId = @iEmployeeId  AND bStatus = 1;
+      WHERE iEmployeeId = @iEmployeeId;
     `);
 
     res.json(result.recordset);
@@ -1225,7 +1225,7 @@ app.get('/getAllContractorDetails',verifyToken, async (req, res) => {
     const request = new sql.Request();
     const result = await request.query(`
     USE ERP;
-    SELECT * FROM tblContractorDetails;
+    SELECT * FROM tblContractorDetails WHERE bStatus = 1;
     `);
 
     res.json(result.recordset);
@@ -1247,7 +1247,7 @@ app.get('/getCoOperate',verifyToken, async (req, res) => {
       SELECT
         *
       FROM ERP.dbo.tblCoOperateData
-      WHERE iEmployeeId = @iEmployeeId  AND bStatus = 1;
+      WHERE iEmployeeId = @iEmployeeId;
     `);
 
     res.json(result.recordset);
@@ -1262,7 +1262,7 @@ app.get('/getAllCoOperateDetails',verifyToken, async (req, res) => {
     const request = new sql.Request();
     const result = await request.query(`
     USE ERP;
-    SELECT * FROM tblCoOperateData;
+    SELECT * FROM tblCoOperateData WHERE bStatus = 1;
     `);
 
     res.json(result.recordset);
