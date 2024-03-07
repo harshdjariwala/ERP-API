@@ -1461,7 +1461,7 @@ app.post('/insertCoOperateData',verifyToken, async (req, res) => {
 //insert contractor
 
 
-app.post('/insertContractorDetails', async (req, res) => {
+app.post('/insertContractorDetails',verifyToken, async (req, res) => {
   const {
     sCompanyName, sFounderName, sFounderContactNumber, sCompanyContactNumber,
     sAdd1, sAdd2, sCity, sState, sPinCode, sGSTNumber, sSupervisorName,
@@ -1523,7 +1523,7 @@ app.post('/insertContractorDetails', async (req, res) => {
   }
 });
 // Approve Employee
-app.put('/approveEmployee', async (req, res) => {
+app.put('/approveEmployee',verifyToken, async (req, res) => {
   const {
     iEmployeeId,
     sEmploymentType,
