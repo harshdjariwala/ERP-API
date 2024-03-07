@@ -480,37 +480,6 @@ app.get('/checkinStatus', async (req, res) => {
     return res.status(500).json({ error: 'Error executing SQL query.' });
   }
 });
-
-
-  //Get All employee
-  app.get('/getAllEmployeeData', verifyToken, async (req, res) => {
-    try {
-      const request = new sql.Request();
-  
-      const query = `
-        USE ERP; 
-        SELECT
-          P.*,
-          I.*,
-          F.*,
-          C.*,
-          Co.*
-        FROM
-          tblPermanentEmployeeData P
-        LEFT JOIN tblInternData I ON P.iEmployeeId = I.iEmployeeId
-        LEFT JOIN tblFreeLanceDetails F ON P.iEmployeeId = F.iEmployeeId
-        LEFT JOIN tblContractorDetails C ON P.iEmployeeId = C.iEmployeeId
-        LEFT JOIN tblCoOperateData Co ON P.iEmployeeId = Co.iEmployeeId
-        WHERE P.bStatus = 1`;
-  
-      const result = await request.query(query);
-  
-      res.json(result.recordset);
-    } catch (err) {
-      console.error('Error executing SQL query:', err);
-      res.status(500).json({ error: 'Error executing SQL query.' });
-    }
-  });
   
 
   app.post('/loginAuth', async (req, res) => {
@@ -1126,7 +1095,7 @@ app.get('/getPermanentEmployee',verifyToken, async (req, res) => {
       SELECT
         *
       FROM ERP.dbo.tblPermanentEmployeeData
-      WHERE iEmployeeId = @iEmployeeId;
+      WHERE iEmployeeId = @iEmployeeId AND bStatus = 1;
     `);
 
     res.json(result.recordset);
@@ -1148,7 +1117,7 @@ app.get('/getInternEmployee',verifyToken, async (req, res) => {
       SELECT
         *
       FROM ERP.dbo.tblInternData
-      WHERE iEmployeeId = @iEmployeeId;
+      WHERE iEmployeeId = @iEmployeeId  AND bStatus = 1;
     `);
 
     res.json(result.recordset);
@@ -1171,7 +1140,7 @@ app.get('/getFreelanceDetails',verifyToken, async (req, res) => {
       SELECT
         *
       FROM ERP.dbo.tblFreeLanceDetails
-      WHERE iEmployeeId = @iEmployeeId;
+      WHERE iEmployeeId = @iEmployeeId  AND bStatus = 1;
     `);
 
     res.json(result.recordset);
@@ -1194,7 +1163,7 @@ app.get('/getContractorDetails', verifyToken, async (req, res) => {
       SELECT
         *
       FROM ERP.dbo.tblContractorDetails
-      WHERE iEmployeeId = @iEmployeeId;
+      WHERE iEmployeeId = @iEmployeeId  AND bStatus = 1;
     `);
 
     res.json(result.recordset);
@@ -1216,7 +1185,7 @@ app.get('/getCoOperate',verifyToken, async (req, res) => {
       SELECT
         *
       FROM ERP.dbo.tblCoOperateData
-      WHERE iEmployeeId = @iEmployeeId;
+      WHERE iEmployeeId = @iEmployeeId  AND bStatus = 1;
     `);
 
     res.json(result.recordset);
