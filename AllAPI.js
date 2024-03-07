@@ -1522,6 +1522,61 @@ app.post('/insertContractorDetails', async (req, res) => {
     res.status(500).json({ error: 'Error executing SQL query.' });
   }
 });
+// Approve Employee
+app.put('/approveEmployee', async (req, res) => {
+  const {
+    iEmployeeId,
+    sEmploymentType,
+    iApprovedBy,
+    bStatus
+  } = req.body;
+
+  try {
+    // Use parameterized queries to prevent SQL injection
+    const request = new sql.Request();
+    request.input('iEmployeeId', sql.Int, iEmployeeId);
+    request.input('sEmploymentType', sql.NVarChar(255), sEmploymentType);
+    request.input('iApprovedBy', sql.Int, iApprovedBy);
+    request.input('bStatus', sql.Bit, bStatus);
+
+    // Use a switch statement for better readability
+    let status;
+    switch (sEmploymentType) {
+      case 'Permanent':
+        status = 'tblPermanentEmployeeData';
+        break;
+      case 'Freelance':
+        status = 'tblFreeLanceDetails';
+        break;
+      case 'CoOperate':
+        status = 'tblCoOperateData';
+        break;
+      case 'Intern':
+        status = 'tblInternData';
+        break;
+      case 'Contractor':
+        status = 'tblContractorDetails';
+        break;
+      default:
+        return res.status(400).json({ error: 'Invalid Employment Type' });
+    }
+
+    // Use a template literal to include the table name dynamically
+    const result = await request.query(`
+  USE ERP; 
+  UPDATE [${status}] 
+  SET [bStatus] = @bStatus, [iApprovedBy] = @iApprovedBy, [dtApprovedDate] = GETDATE() 
+  WHERE [iEmployeeId] = @iEmployeeId;
+`);
+
+
+
+    res.json({ message: 'Employee Approved successfully' });
+  } catch (err) {
+    console.error('Error executing SQL query:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 const server = http.createServer(app);
 
