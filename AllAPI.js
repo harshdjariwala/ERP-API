@@ -967,12 +967,12 @@ app.get('/getPermanentEmployee',verifyToken, async (req, res) => {
   }
 });
 
-app.get('/getAllPermanentEmployee',verifyToken, async (req, res) => {
+app.get('/getNullPermanentEmployee',verifyToken, async (req, res) => {
   try {
     const request = new sql.Request();
     const result = await request.query(`
     USE ERP;
-    SELECT * FROM tblPermanentEmployeeData WHERE bStatus = 1;
+    SELECT * FROM tblPermanentEmployeeData WHERE bStatus IS NULL;
 
     `);
 
@@ -1006,12 +1006,12 @@ app.get('/getInternEmployee',verifyToken, async (req, res) => {
   }
 });
 
-app.get('/getAllInternEmployee',verifyToken, async (req, res) => {
+app.get('/getNullInternEmployee',verifyToken, async (req, res) => {
   try {
     const request = new sql.Request();
     const result = await request.query(`
     USE ERP;
-    SELECT * FROM tblInternData WHERE bStatus = 1;
+    SELECT * FROM tblInternData WHERE bStatus IS NULL;
     `);
 
     res.json(result.recordset);
@@ -1044,12 +1044,12 @@ app.get('/getFreelanceDetails',verifyToken, async (req, res) => {
   }
 });
 
-app.get('/getAllFreelanceDetails',verifyToken, async (req, res) => {
+app.get('/getNullFreelanceDetails',verifyToken, async (req, res) => {
   try {
     const request = new sql.Request();
     const result = await request.query(`
     USE ERP;
-    SELECT * FROM tblFreeLanceDetails WHERE bStatus = 1;
+    SELECT * FROM tblFreeLanceDetails WHERE bStatus IS NULL;
     `);
 
     res.json(result.recordset);
@@ -1082,12 +1082,12 @@ app.get('/getContractorDetails', verifyToken, async (req, res) => {
   }
 });
 
-app.get('/getAllContractorDetails',verifyToken, async (req, res) => {
+app.get('/getNullContractorDetails',verifyToken, async (req, res) => {
   try {
     const request = new sql.Request();
     const result = await request.query(`
     USE ERP;
-    SELECT * FROM tblContractorDetails WHERE bStatus = 1;
+    SELECT * FROM tblContractorDetails WHERE bStatus IS NULL;
     `);
 
     res.json(result.recordset);
@@ -1119,12 +1119,12 @@ app.get('/getCoOperate',verifyToken, async (req, res) => {
   }
 });
 
-app.get('/getAllCoOperateDetails',verifyToken, async (req, res) => {
+app.get('/getNullCoOperateDetails',verifyToken, async (req, res) => {
   try {
     const request = new sql.Request();
     const result = await request.query(`
     USE ERP;
-    SELECT * FROM tblCoOperateData WHERE bStatus = 1;
+    SELECT * FROM tblCoOperateData WHERE bStatus IS NULL;
     `);
 
     res.json(result.recordset);
