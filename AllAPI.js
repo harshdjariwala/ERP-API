@@ -995,6 +995,7 @@ app.get('/getNullEmployees',verifyToken, async (req, res) => {
   try {
     const request = new sql.Request();
     const result = await request.query(`
+    USE ERP;
     SELECT iEmployeeId, 
        sFirstName + ' ' + sLastName AS employeeName,
        sEmailId,
