@@ -967,21 +967,6 @@ app.get('/getPermanentEmployee',verifyToken, async (req, res) => {
   }
 });
 
-app.get('/getNullPermanentEmployee',verifyToken, async (req, res) => {
-  try {
-    const request = new sql.Request();
-    const result = await request.query(`
-    USE ERP;
-    SELECT * FROM tblPermanentEmployeeData WHERE bStatus IS NULL;
-
-    `);
-
-    res.json(result.recordset);
-  } catch (err) {
-    console.error('Error executing SQL query:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
 
 //get Intern Employee
 app.get('/getInternEmployee',verifyToken, async (req, res) => {
@@ -1006,12 +991,59 @@ app.get('/getInternEmployee',verifyToken, async (req, res) => {
   }
 });
 
-app.get('/getNullInternEmployee',verifyToken, async (req, res) => {
+app.get('/getNullEmployees',verifyToken, async (req, res) => {
   try {
     const request = new sql.Request();
     const result = await request.query(`
-    USE ERP;
-    SELECT * FROM tblInternData WHERE bStatus IS NULL;
+    SELECT iEmployeeId, 
+       sFirstName + ' ' + sLastName AS employeeName,
+       sEmailId,
+       sPhoneNumber,
+       sEmploymentType,
+       bStatus
+FROM tblPermanentEmployeeData
+WHERE bStatus IS NULL
+
+UNION
+
+SELECT iEmployeeId, 
+       sFirstName + ' ' + sLastName AS employeeName,
+       sEmailId,
+       sPhoneNumber,
+       sEmploymentType,
+       bStatus
+FROM tblInternData
+
+UNION
+
+SELECT iEmployeeId, 
+       sFirstName + ' ' + sLastName AS employeeName,
+       sEmailId,
+       sPhoneNumber,
+       sEmploymentType,
+       bStatus
+FROM tblFreeLanceDetails
+
+UNION
+
+SELECT iEmployeeId, 
+       sCompanyName AS employeeName,
+       NULL AS sEmailId,
+       sFounderContactNumber AS sPhoneNumber,
+       sEmploymentType,
+       bStatus
+FROM tblContractorDetails
+
+UNION
+
+SELECT iEmployeeId, 
+       sCompanyName AS employeeName,
+       sCompanyEmailId AS sEmailId,
+       sCompanyContactNumber AS sPhoneNumber,
+       sEmploymentType,
+       bStatus
+FROM tblCoOperateData
+WHERE bStatus IS NULL;
     `);
 
     res.json(result.recordset);
@@ -1044,20 +1076,6 @@ app.get('/getFreelanceDetails',verifyToken, async (req, res) => {
   }
 });
 
-app.get('/getNullFreelanceDetails',verifyToken, async (req, res) => {
-  try {
-    const request = new sql.Request();
-    const result = await request.query(`
-    USE ERP;
-    SELECT * FROM tblFreeLanceDetails WHERE bStatus IS NULL;
-    `);
-
-    res.json(result.recordset);
-  } catch (err) {
-    console.error('Error executing SQL query:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
 
 //get Contractor
 app.get('/getContractorDetails', verifyToken, async (req, res) => {
@@ -1082,20 +1100,6 @@ app.get('/getContractorDetails', verifyToken, async (req, res) => {
   }
 });
 
-app.get('/getNullContractorDetails',verifyToken, async (req, res) => {
-  try {
-    const request = new sql.Request();
-    const result = await request.query(`
-    USE ERP;
-    SELECT * FROM tblContractorDetails WHERE bStatus IS NULL;
-    `);
-
-    res.json(result.recordset);
-  } catch (err) {
-    console.error('Error executing SQL query:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
 
 // get CoOperate
 app.get('/getCoOperate',verifyToken, async (req, res) => {
@@ -1119,20 +1123,6 @@ app.get('/getCoOperate',verifyToken, async (req, res) => {
   }
 });
 
-app.get('/getNullCoOperateDetails',verifyToken, async (req, res) => {
-  try {
-    const request = new sql.Request();
-    const result = await request.query(`
-    USE ERP;
-    SELECT * FROM tblCoOperateData WHERE bStatus IS NULL;
-    `);
-
-    res.json(result.recordset);
-  } catch (err) {
-    console.error('Error executing SQL query:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
 
 //insert permanenet
 
