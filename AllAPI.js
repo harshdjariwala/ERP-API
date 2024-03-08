@@ -1001,6 +1001,7 @@ app.get('/getNullEmployees',verifyToken, async (req, res) => {
        sEmailId,
        sPhoneNumber,
        sEmploymentType,
+	   dtCreateDate,
        bStatus
 FROM tblPermanentEmployeeData
 WHERE bStatus IS NULL
@@ -1012,6 +1013,7 @@ SELECT iEmployeeId,
        sEmailId,
        sPhoneNumber,
        sEmploymentType,
+	   dtCreateDate,
        bStatus
 FROM tblInternData
 
@@ -1022,6 +1024,7 @@ SELECT iEmployeeId,
        sEmailId,
        sPhoneNumber,
        sEmploymentType,
+	   dtCreateDate,
        bStatus
 FROM tblFreeLanceDetails
 
@@ -1032,6 +1035,7 @@ SELECT iEmployeeId,
        NULL AS sEmailId,
        sFounderContactNumber AS sPhoneNumber,
        sEmploymentType,
+	   dtCreateDate,
        bStatus
 FROM tblContractorDetails
 
@@ -1042,6 +1046,7 @@ SELECT iEmployeeId,
        sCompanyEmailId AS sEmailId,
        sCompanyContactNumber AS sPhoneNumber,
        sEmploymentType,
+	   dtCreateDate,
        bStatus
 FROM tblCoOperateData
 WHERE bStatus IS NULL;
