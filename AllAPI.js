@@ -1016,6 +1016,7 @@ SELECT iEmployeeId,
 	   dtCreateDate,
        bStatus
 FROM tblInternData
+WHERE bStatus IS NULL
 
 UNION
 
@@ -1027,6 +1028,7 @@ SELECT iEmployeeId,
 	   dtCreateDate,
        bStatus
 FROM tblFreeLanceDetails
+WHERE bStatus IS NULL
 
 UNION
 
@@ -1038,6 +1040,7 @@ SELECT iEmployeeId,
 	   dtCreateDate,
        bStatus
 FROM tblContractorDetails
+WHERE bStatus IS NULL
 
 UNION
 
